@@ -45,7 +45,7 @@
     "negative_prompt": "modern skyscrapers, paved highways, neon lights, anime, cartoon, 3d render plastic skin, distorted hands, extra limbs, text overlay, watermark"
   },
   "music": {
-    "stage_status": "pending",
+    "stage_status": "generated",
     "prompt": "Warm Ethiopian acoustic film score featuring washint bamboo flute, gentle krar lyre plucking, and expressive masinko strings, evolving from quiet morning intimacy to determined emotional crescendo and hopeful resolution.",
     "lyrics_or_tags": "instrumental, ethiopian folk cinematic, washint, krar, masinko, warm, emotional, acoustic",
     "tempo_bpm": 76,
@@ -68,7 +68,7 @@
         "mood": "hopeful_pride_resolution"
       }
     ],
-    "output_path": null,
+    "output_path": "assets/music/mamush_original_score.mp3",
     "cache_key": null
   },
   "shots": [
@@ -446,8 +446,8 @@
     }
   ],
   "assembly": {
-    "stage_status": "pending",
-    "output_path": null,
+    "stage_status": "generated",
+    "output_path": "assets/output/mamush_final.mp4",
     "subtitle_path": "assets/output/narration/subtitles_en.srt",
     "narration_script_path": "assets/output/narration/narration_am.txt",
     "audio_mix": {
