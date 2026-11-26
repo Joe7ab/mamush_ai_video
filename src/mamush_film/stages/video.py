@@ -65,10 +65,11 @@ def _run_ffmpeg(
     frames = round(duration * fps)
 
     # Alternate slow push-in and pull-out movements.
+    zoom_rate = 0.08 / max(frames - 1, 1)
     if shot_order % 2:
-        zoom = "min(1+0.00004*on,1.08)"
+        zoom = f"min(1+{zoom_rate:.8f}*on,1.08)"
     else:
-        zoom = "max(1.08-0.00004*on,1.0)"
+        zoom = f"max(1.08-{zoom_rate:.8f}*on,1.0)"
 
     video_filter = (
         f"zoompan=z='{zoom}':"
