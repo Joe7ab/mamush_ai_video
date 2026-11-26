@@ -1,0 +1,10 @@
+
+# Core configuration, schema validation, and HTTP/retry utilities
+jsonschema>=4.23.0,<5.0.0
+python-dotenv>=1.0.1,<2.0.0
+requests>=2.32.0,<3.0.0
+tenacity>=9.0.0,<10.0.0
+
+# Pipeline stage SDKs / media utilities
+google-genai>=2.33.0,<3.0.0
+pillow>=11.0.0

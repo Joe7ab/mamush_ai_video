@@ -1,0 +1,460 @@
+{
+  "$schema": "../schemas/storyboard.schema.json",
+  "schema_version": "1.0.0",
+  "project": {
+    "title": "ማሙሽ - የእናት ፍቅር",
+    "english_title": "Mamush - A Mother's Love",
+    "logline": "In the mist-covered Ethiopian highlands, a devoted rural mother named Mamush sacrifices her comfort and guides her young son across rain-swollen trails so he can reach his schoolhouse—and as he grows older, her love remains the strength that helps him overcome every obstacle.",
+    "language": "am",
+    "target_duration_sec": {
+      "min": 60,
+      "max": 90
+    },
+    "aspect_ratio": "16:9",
+    "resolution": {
+      "width": 1920,
+      "height": 1080
+    },
+    "fps": 24
+  },
+  "characters": [
+    {
+      "id": "mamush",
+      "name": "Mamush (ማሙሽ)",
+      "role": "Rural Ethiopian mother",
+      "visual_bible": "Ethiopian woman in her mid-30s with warm dark brown skin, braided hair partially covered by a traditional white handwoven cotton netela shawl with subtle woven border, earthy woven dress, weathered gentle hands, resilient and loving expression."
+    },
+    {
+      "id": "son",
+      "name": "Dawit (ዳዊት)",
+      "role": "Young schoolboy, Mamush's son",
+      "visual_bible": "Eight-year-old rural Ethiopian boy with short curly hair, faded navy knit sweater over a cotton shirt, dusty khaki shorts, worn rubber sandals, carrying a cloth-wrapped notebook and small canvas satchel."
+    }
+  ],
+  "style_guide": {
+    "visual_style": "Naturalistic cinematic realism, 35mm film grain texture, intimate documentary-inspired framing of Ethiopian highland countryside.",
+    "color_palette": [
+      "warm terracotta red",
+      "highland emerald green",
+      "golden dawn amber",
+      "handwoven ivory cotton",
+      "rain-soaked slate earth"
+    ],
+    "lighting": "Soft natural golden-hour and overcast highland daylight, gentle volumetric morning mist, warm hearth glow indoors.",
+    "cinematography_notes": "Grounded eye-level perspective, shallow depth of field on emotional faces, sweeping wide establishing frames for landscape scale.",
+    "negative_prompt": "modern skyscrapers, paved highways, neon lights, anime, cartoon, 3d render plastic skin, distorted hands, extra limbs, text overlay, watermark"
+  },
+  "music": {
+    "stage_status": "pending",
+    "prompt": "Warm Ethiopian acoustic film score featuring washint bamboo flute, gentle krar lyre plucking, and expressive masinko strings, evolving from quiet morning intimacy to determined emotional crescendo and hopeful resolution.",
+    "lyrics_or_tags": "instrumental, ethiopian folk cinematic, washint, krar, masinko, warm, emotional, acoustic",
+    "tempo_bpm": 76,
+    "duration_sec": 72.0,
+    "mood_progression": [
+      {
+        "time_sec": 0,
+        "mood": "tender_dawn_anticipation"
+      },
+      {
+        "time_sec": 25,
+        "mood": "storm_tension_and_struggle"
+      },
+      {
+        "time_sec": 45,
+        "mood": "sacrificial_warmth_and_resolve"
+      },
+      {
+        "time_sec": 62,
+        "mood": "hopeful_pride_resolution"
+      }
+    ],
+    "output_path": null,
+    "cache_key": null
+  },
+  "shots": [
+    {
+      "shot_id": "shot_01",
+      "order": 1,
+      "act": "setup",
+      "scene_title": "Highland Dawn Over the Village",
+      "duration_sec": 8.0,
+      "character_ids": [],
+      "setting": "Terraced Ethiopian highlands overlooking a small traditional mud-and-thatch homestead surrounded by eucalyptus and acacia trees.",
+      "time_of_day": "dawn",
+      "camera": {
+        "shot_type": "extreme_wide",
+        "movement": "slow_pan_right",
+        "lens_mm": 24
+      },
+      "narration": {
+        "language": "am",
+        "text_am": "በኢትዮጵያ ደጋማ አካባቢዎች ጎህ ሲቀድ፣ ማሙሽ የምትባል እናት በትንሽ ጎጆዋ ውስጥ ከሌሎች ቀድማ ከእንቅልፏ ትነሳለች።",
+        "text_en": "As dawn breaks across the Ethiopian highlands, a mother named Mamush wakes in her small homestead before anyone else.",
+        "emotion": "warm_reflective",
+        "start_sec": 0.6,
+        "end_sec": 7.4,
+        "audio_path": "assets/audio/shot_01_narration.wav",
+        "cache_key": "272c5b135629a72d924f0b1e03a3be8cef1228e6ca601d9aa721fdcea5fb86b2"
+      },
+      "keyframe": {
+        "prompt": "[PLACEHOLDER] Cinematic extreme wide shot of rural Ethiopian highlands at dawn, mist drifting across green terraced hills, traditional round mud-and-thatch gojo home with thin morning hearth smoke rising, golden sunrise light, 35mm film grain.",
+        "negative_prompt": "modern buildings, power lines, asphalt road, watermark",
+        "seed": 1001,
+        "image_path": null,
+        "cache_key": null
+      },
+      "video": {
+        "motion_prompt": "[PLACEHOLDER] Gentle morning mist drifts across the valley while thin woodsmoke rises slowly from the homestead roof as camera pans slowly right.",
+        "fps": 24,
+        "clip_path": null,
+        "cache_key": null
+      },
+      "transition_out": "crossfade",
+      "stage_status": {
+        "narration": "generated",
+        "keyframe": "pending",
+        "video": "pending"
+      }
+    },
+    {
+      "shot_id": "shot_02",
+      "order": 2,
+      "act": "setup",
+      "scene_title": "Preparing the Notebook",
+      "duration_sec": 9.0,
+      "character_ids": [
+        "mamush",
+        "son"
+      ],
+      "setting": "Warm, dimly lit interior of the traditional mud-brick home illuminated by doorway sunlight and ember glow.",
+      "time_of_day": "morning",
+      "camera": {
+        "shot_type": "medium_close_up",
+        "movement": "push_in",
+        "lens_mm": 50
+      },
+      "narration": {
+        "language": "am",
+        "text_am": "ለራሷ የሚበቃ ባይኖራትም፣ የልጇን ደብተር በንጹህ ጨርቅ ጠቅልላ ለትምህርት ታዘጋጃለች።",
+        "text_en": "Though she barely has enough for herself, she wraps her son's notebook in clean cloth and prepares him for school.",
+        "emotion": "tender_caring",
+        "start_sec": 8.5,
+        "end_sec": 16.3,
+        "audio_path": "assets/audio/shot_02_narration.wav",
+        "cache_key": "0b0ad2162ed432b2117c0b8e41aa797e77c0cee404e2f698006c6f31067bb824"
+      },
+      "keyframe": {
+        "prompt": "[PLACEHOLDER] Medium close-up inside a rustic Ethiopian rural home, warm sunbeam cutting through doorway dust, Ethiopian mother Mamush in white cotton netela wrapping a worn school notebook in protective cloth for her smiling eight-year-old son.",
+        "negative_prompt": "modern kitchen, fluorescent lighting, plastic furniture, watermark",
+        "seed": 1002,
+        "image_path": null,
+        "cache_key": null
+      },
+      "video": {
+        "motion_prompt": "[PLACEHOLDER] Mamush ties the cloth gently around the notebook and hands the satchel to her son as dust motes float in the morning sunbeam, subtle camera push-in.",
+        "fps": 24,
+        "clip_path": null,
+        "cache_key": null
+      },
+      "transition_out": "cut",
+      "stage_status": {
+        "narration": "generated",
+        "keyframe": "pending",
+        "video": "pending"
+      }
+    },
+    {
+      "shot_id": "shot_03",
+      "order": 3,
+      "act": "setup",
+      "scene_title": "Stepping Onto the Red Earth Trail",
+      "duration_sec": 8.0,
+      "character_ids": [
+        "mamush",
+        "son"
+      ],
+      "setting": "Winding red-clay footpath flanked by wild grass and flat-topped acacia trees.",
+      "time_of_day": "morning",
+      "camera": {
+        "shot_type": "medium_wide",
+        "movement": "tracking_follow",
+        "lens_mm": 35
+      },
+      "narration": {
+        "language": "am",
+        "text_am": "የገጠሩ ቀይ መንገድ ረጅምና አስቸጋሪ ቢሆንም፣ በጽናትና በተስፋ ጉዟቸውን ይጀምራሉ።",
+        "text_en": "Though the rural red-earth road is long and unforgiving, they begin their journey with resilience and hope.",
+        "emotion": "steady_hopeful",
+        "start_sec": 17.5,
+        "end_sec": 24.4,
+        "audio_path": "assets/audio/shot_03_narration.wav",
+        "cache_key": "59d51294cef1910e9e66d95cd4d8fad49867a6fbbb1c99139cfec0777aa2ff70"
+      },
+      "keyframe": {
+        "prompt": "[PLACEHOLDER] Medium wide shot of Ethiopian mother Mamush walking hand in hand with her young son along a red-earth countryside footpath, green highland meadows and acacia trees, gathering distant rain clouds on the horizon.",
+        "negative_prompt": "cars, paved sidewalk, modern backpacks, watermark",
+        "seed": 1003,
+        "image_path": null,
+        "cache_key": null
+      },
+      "video": {
+        "motion_prompt": "[PLACEHOLDER] Mother and son walk forward along the winding dirt path while morning breeze ripples through tall grass, smooth tracking follow shot.",
+        "fps": 24,
+        "clip_path": null,
+        "cache_key": null
+      },
+      "transition_out": "crossfade",
+      "stage_status": {
+        "narration": "generated",
+        "keyframe": "pending",
+        "video": "pending"
+      }
+    },
+    {
+      "shot_id": "shot_04",
+      "order": 4,
+      "act": "obstacle",
+      "scene_title": "Sudden Downpour and Broken Sandal",
+      "duration_sec": 10.0,
+      "character_ids": [
+        "mamush",
+        "son"
+      ],
+      "setting": "Steep muddy hillside path beside a swollen seasonal stream under heavy rain.",
+      "time_of_day": "midday",
+      "camera": {
+        "shot_type": "medium",
+        "movement": "handheld_gentle",
+        "lens_mm": 35
+      },
+      "narration": {
+        "language": "am",
+        "text_am": "ዝናቡ ሲበረታ፣ መንገዱም በጭቃና በጎርፍ ሲሞላ፣ ልጁ ጉዞውን ሊያቆም ይፈልጋል፤ እናቱ ግን ተስፋ እንዲቆርጥ አትፈቅድለትም።",
+        "text_en": "When the rain intensifies and the path fills with mud and floodwater, the boy wants to stop—yet his mother refuses to let him lose hope.",
+        "emotion": "empathetic_tense",
+        "start_sec": 25.5,
+        "end_sec": 34.3,
+        "audio_path": "assets/audio/shot_04_narration.wav",
+        "cache_key": "6de42ec11de2c3aa3fa7325e0798b10124e73f1904c2d4ca5637e99399171c7f"
+      },
+      "keyframe": {
+        "prompt": "[PLACEHOLDER] Dramatic cinematic medium shot in heavy Ethiopian highland rain, mud-splattered trail beside a rushing brown seasonal creek, young boy sitting on a wet stone looking down at a snapped rubber sandal while Mamush shields him.",
+        "negative_prompt": "umbrellas, raincoats, dry pavement, studio lighting, watermark",
+        "seed": 1004,
+        "image_path": null,
+        "cache_key": null
+      },
+      "video": {
+        "motion_prompt": "[PLACEHOLDER] Raindrops splash onto the muddy path and swollen stream while Mamush kneels urgently beside her shivering son, gentle handheld motion.",
+        "fps": 24,
+        "clip_path": null,
+        "cache_key": null
+      },
+      "transition_out": "cut",
+      "stage_status": {
+        "narration": "generated",
+        "keyframe": "pending",
+        "video": "pending"
+      }
+    },
+    {
+      "shot_id": "shot_05",
+      "order": 5,
+      "act": "support",
+      "scene_title": "A Mother's Shawl and Crossing the Stream",
+      "duration_sec": 10.0,
+      "character_ids": [
+        "mamush",
+        "son"
+      ],
+      "setting": "Shallow rocky crossing of the rain-swollen rural stream.",
+      "time_of_day": "midday",
+      "camera": {
+        "shot_type": "medium_wide",
+        "movement": "slow_pan_left",
+        "lens_mm": 40
+      },
+      "narration": {
+        "language": "am",
+        "text_am": "ነጠላዋን ለደብተሩ መጠለያ አድርጋ፣ ልጇን በጀርባዋ አዝላ ውሃው የሞላውን ወንዝ በትጋት ታሻግረዋለች።",
+        "text_en": "Using her netela shawl to shelter his notebook, she lifts her son onto her back and steadfastly carries him across the swollen river.",
+        "emotion": "deep_devotion",
+        "start_sec": 35.5,
+        "end_sec": 44.3,
+        "audio_path": "assets/audio/shot_05_narration.wav",
+        "cache_key": "cb57daca3adafc9fe637cae20390302f849306ac859a26d23d6f51969a587d4b"
+      },
+      "keyframe": {
+        "prompt": "[PLACEHOLDER] Emotional medium wide shot of determined Ethiopian mother Mamush wading barefoot across stepping stones in a shallow muddy stream, carrying her young son on her back with his notebook satchel wrapped safely in her white shawl.",
+        "negative_prompt": "bridges, modern boots, smiling posed look, watermark",
+        "seed": 1005,
+        "image_path": null,
+        "cache_key": null
+      },
+      "video": {
+        "motion_prompt": "[PLACEHOLDER] Mamush steps steadily from stone to stone through swirling shallow water carrying her son securely while rain eases around them.",
+        "fps": 24,
+        "clip_path": null,
+        "cache_key": null
+      },
+      "transition_out": "crossfade",
+      "stage_status": {
+        "narration": "generated",
+        "keyframe": "pending",
+        "video": "pending"
+      }
+    },
+    {
+      "shot_id": "shot_06",
+      "order": 6,
+      "act": "support",
+      "scene_title": "Clearing Skies and Courage",
+      "duration_sec": 9.0,
+      "character_ids": [
+        "mamush",
+        "son"
+      ],
+      "setting": "Dry ridge overlooking a sunlit valley with a small rural school visible in the distance.",
+      "time_of_day": "afternoon",
+      "camera": {
+        "shot_type": "over_the_shoulder",
+        "movement": "tilt_up",
+        "lens_mm": 50
+      },
+      "narration": {
+        "language": "am",
+        "text_am": "\"ልጄ ሆይ፣ የምትሄድበት መንገድ አስቸጋሪ ቢሆንም አትደንግጥ፤ ሁሌም ጠንካራ ሁን\" በማለት በፍቅር ታበረታታዋለች።",
+        "text_en": "\"My son, even though the road you walk is hard, do not be afraid; always stay strong,\" she tells him with loving encouragement.",
+        "emotion": "encouraging_resolute",
+        "start_sec": 45.5,
+        "end_sec": 53.3,
+        "audio_path": "assets/audio/shot_06_narration.wav",
+        "cache_key": "b0c67b729558b653e4fde53fd0d0a2b200523245f8751f5d6c349ad68b8b050f"
+      },
+      "keyframe": {
+        "prompt": "[PLACEHOLDER] Over-the-shoulder cinematic shot from behind Mamush kneeling to tie a cloth strip around her son's sandal, sunlit green Ethiopian valley ahead with a modest tin-roofed rural schoolhouse perched on the ridge.",
+        "negative_prompt": "city skyline, paved highway, overcast gloom, watermark",
+        "seed": 1006,
+        "image_path": null,
+        "cache_key": null
+      },
+      "video": {
+        "motion_prompt": "[PLACEHOLDER] Mamush finishes fastening the sandal, places a reassuring hand on her son's shoulder, and camera tilts up as golden sunlight breaks over the distant schoolhouse.",
+        "fps": 24,
+        "clip_path": null,
+        "cache_key": null
+      },
+      "transition_out": "crossfade",
+      "stage_status": {
+        "narration": "generated",
+        "keyframe": "pending",
+        "video": "pending"
+      }
+    },
+    {
+      "shot_id": "shot_07",
+      "order": 7,
+      "act": "resolution",
+      "scene_title": "Reaching the Schoolyard",
+      "duration_sec": 10.0,
+      "character_ids": [
+        "son",
+        "mamush"
+      ],
+      "setting": "Open dirt courtyard of a rural highland primary school with children gathering under an acacia tree.",
+      "time_of_day": "golden_hour",
+      "camera": {
+        "shot_type": "wide",
+        "movement": "tracking_follow",
+        "lens_mm": 35
+      },
+      "narration": {
+        "language": "am",
+        "text_am": "ጊዜ እያለፈ ልጁ ሲያድግ፣ በሕይወት የተለያዩ ፈተናዎችን ቢያጋጥመውም፣ የእናቱ ፍቅርና ድጋፍ በልቡ ውስጥ የጥንካሬ ምንጭ ሆኖ ይቀጥላል።",
+        "text_en": "As time passes and the boy grows older, though life brings many trials, his mother's love and support remain a source of strength within his heart.",
+        "emotion": "steadfast_moving",
+        "start_sec": 54.5,
+        "end_sec": 63.3,
+        "audio_path": "assets/audio/shot_07_narration.wav",
+        "cache_key": "759600516ded0f7064f520dd0e07ba4522a1d5ab3d4b37738b240e6e96b52746"
+      },
+      "keyframe": {
+        "prompt": "[PLACEHOLDER] Warm golden-hour wide shot of young Ethiopian schoolboy running happily with his cloth-wrapped notebook into a sunlit rural school courtyard where other village children gather, Mamush watching from the hill path in the foreground edge.",
+        "negative_prompt": "brick university buildings, school buses, concrete fence, watermark",
+        "seed": 1007,
+        "image_path": null,
+        "cache_key": null
+      },
+      "video": {
+        "motion_prompt": "[PLACEHOLDER] The boy sprints joyfully across the sunlit courtyard to join his classmates while warm golden light illuminates the dust behind his feet.",
+        "fps": 24,
+        "clip_path": null,
+        "cache_key": null
+      },
+      "transition_out": "crossfade",
+      "stage_status": {
+        "narration": "generated",
+        "keyframe": "pending",
+        "video": "pending"
+      }
+    },
+    {
+      "shot_id": "shot_08",
+      "order": 8,
+      "act": "resolution",
+      "scene_title": "A Mother's Quiet Pride",
+      "duration_sec": 8.0,
+      "character_ids": [
+        "mamush"
+      ],
+      "setting": "Sunlit ridge path overlooking the schoolyard below.",
+      "time_of_day": "golden_hour",
+      "camera": {
+        "shot_type": "close_up",
+        "movement": "pull_back",
+        "lens_mm": 85
+      },
+      "narration": {
+        "language": "am",
+        "text_am": "የእናት ፍቅር ማንኛውንም መሰናክል ለማለፍ ኃይል ይሰጣል፤ ለተሻለ ሕይወትና ለብሩህ ወደፊትም ተስፋን ይፈጥራል።",
+        "text_en": "A mother's love gives the strength to overcome any obstacle, and sparks hope for a better life and a brighter future.",
+        "emotion": "inspiring_serene",
+        "start_sec": 64.5,
+        "end_sec": 71.3,
+        "audio_path": "assets/audio/shot_08_narration.wav",
+        "cache_key": "59de4740a0ce5d9a7b8a044f9cf4a53e71e2ea234d6feddff6bd6eaa049303b1"
+      },
+      "keyframe": {
+        "prompt": "[PLACEHOLDER] Intimate 85mm close-up portrait of Mamush standing on the hillside in warm golden-hour sunlight, muddy hem and gentle smile with glistening proud eyes watching her son in the distance, soft cinematic bokeh.",
+        "negative_prompt": "heavy makeup, studio backdrop, harsh flash, watermark",
+        "seed": 1008,
+        "image_path": null,
+        "cache_key": null
+      },
+      "video": {
+        "motion_prompt": "[PLACEHOLDER] Mamush exhales softly with a proud, tearful smile as warm wind moves loose strands of hair and golden light wraps the hillside during a gentle camera pull-back.",
+        "fps": 24,
+        "clip_path": null,
+        "cache_key": null
+      },
+      "transition_out": "fade_black",
+      "stage_status": {
+        "narration": "generated",
+        "keyframe": "pending",
+        "video": "pending"
+      }
+    }
+  ],
+  "assembly": {
+    "stage_status": "pending",
+    "output_path": null,
+    "subtitle_path": "assets/output/narration/subtitles_en.srt",
+    "narration_script_path": "assets/output/narration/narration_am.txt",
+    "audio_mix": {
+      "narration_gain_db": 0.0,
+      "music_gain_db": -12.0,
+      "music_ducking_db": -8.0
+    },
+    "subtitles_enabled": true
+  }
+}
