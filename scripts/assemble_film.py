@@ -14,9 +14,11 @@ SUBTITLES = ROOT / "assets/output/narration/subtitles_en.srt"
 END_CARD = ROOT / "assets/output/end_card.png"
 CONCAT_FILE = ROOT / "assets/output/video_concat.txt"
 
+
 def run(command: list[str]) -> None:
     print("\nRunning:", subprocess.list2cmdline(command), flush=True)
     subprocess.run(command, check=True)
+
 
 def create_end_card() -> None:
     try:
@@ -78,6 +80,7 @@ def create_end_card() -> None:
     END_CARD.parent.mkdir(parents=True, exist_ok=True)
     image.save(END_CARD)
     print(f"Created end card: {END_CARD}")
+
 
 def main() -> int:
     if not shutil.which("ffmpeg") or not shutil.which("ffprobe"):
@@ -172,7 +175,7 @@ def main() -> int:
     filters.append(
         "".join(narration_labels)
         + f"amix=inputs={len(narration)}:duration=longest:"
-          "dropout_transition=0:normalize=0[narration_mix]"
+        "dropout_transition=0:normalize=0[narration_mix]"
     )
 
     music_gain = 10 ** (-12.0 / 20.0)
@@ -235,6 +238,7 @@ def main() -> int:
 
     print(f"\nSUCCESS: {OUTPUT}")
     return 0
+
 
 if __name__ == "__main__":
     try:
