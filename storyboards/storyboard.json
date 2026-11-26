@@ -160,7 +160,7 @@
       "stage_status": {
         "narration": "generated",
         "keyframe": "generated",
-        "video": "generated"
+        "video": "cached"
       }
     },
     {
@@ -207,7 +207,7 @@
       "stage_status": {
         "narration": "generated",
         "keyframe": "generated",
-        "video": "generated"
+        "video": "cached"
       }
     },
     {
@@ -254,7 +254,7 @@
       "stage_status": {
         "narration": "generated",
         "keyframe": "generated",
-        "video": "generated"
+        "video": "cached"
       }
     },
     {
@@ -301,7 +301,7 @@
       "stage_status": {
         "narration": "generated",
         "keyframe": "generated",
-        "video": "generated"
+        "video": "cached"
       }
     },
     {
@@ -348,7 +348,7 @@
       "stage_status": {
         "narration": "generated",
         "keyframe": "generated",
-        "video": "generated"
+        "video": "cached"
       }
     },
     {
@@ -395,7 +395,7 @@
       "stage_status": {
         "narration": "generated",
         "keyframe": "generated",
-        "video": "generated"
+        "video": "cached"
       }
     },
     {
@@ -441,7 +441,7 @@
       "stage_status": {
         "narration": "generated",
         "keyframe": "generated",
-        "video": "generated"
+        "video": "cached"
       }
     }
   ],
