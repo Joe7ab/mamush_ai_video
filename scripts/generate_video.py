@@ -17,19 +17,29 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Animate Mamush AI Film keyframes into video clips."
+        description="Generate Mamush film video clips."
     )
+
     parser.add_argument(
         "--shot-id",
         action="append",
         dest="shot_ids",
-        help="Shot to animate. Repeat to select multiple shots.",
+        help="Shot to generate. Repeat to select multiple shots.",
     )
+
+    parser.add_argument(
+        "--format",
+        choices=["horizontal", "vertical", "both"],
+        default="horizontal",
+        help="Video format to generate. Default: horizontal.",
+    )
+
     parser.add_argument(
         "--force",
         action="store_true",
         help="Regenerate clips even when cached clips exist.",
     )
+
     args = parser.parse_args()
 
     config = load_config(project_root=PROJECT_ROOT)
@@ -40,11 +50,18 @@ def main() -> None:
         format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
     )
 
+    formats = (
+        ["horizontal", "vertical"]
+        if args.format == "both"
+        else [args.format]
+    )
+
     run_video_stage(
         config=config,
         cache=cache,
         shot_ids=args.shot_ids,
         force=args.force,
+        formats=formats,
     )
 
 

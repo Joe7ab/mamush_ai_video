@@ -1,24 +1,5 @@
-# """Stage 3 (stub): Image-to-video shot generation via Wan 2.2."""
 
-# from __future__ import annotations
-
-# import logging
-
-# from mamush_film.cache import StageCache
-# from mamush_film.config import AppConfig
-
-# logger = logging.getLogger("mamush_film.stages.video")
-
-
-# def run_video_stage(config: AppConfig, cache: StageCache) -> None:
-#     """Placeholder for Wan 2.2 video generation (not yet implemented)."""
-#     logger.info("Stage 'video' is not implemented yet; skipping API calls.")
-#     raise NotImplementedError(
-#         "Stage 3 (Wan 2.2 video generation) is a placeholder and not yet implemented."
-#     )
-
-
-"""Stage 3: Animate storyboard keyframes into video clips using FFmpeg."""
+"""Stage 3: Generate independent landscape and portrait video clips."""
 
 from __future__ import annotations
 
@@ -34,6 +15,29 @@ from mamush_film.cache import StageCache, compute_cache_key
 from mamush_film.config import AppConfig
 
 logger = logging.getLogger("mamush_film.stages.video")
+
+FORMATS = {
+    "horizontal": {
+        "image_field": "image_path",
+        "cache_field": "cache_key",
+        "clip_field": "clip_path",
+        "status_field": "video",
+        "cache_status_field": "video",
+        "directory_field": "videos_dir",
+        "width_field": "width",
+        "height_field": "height",
+    },
+    "vertical": {
+        "image_field": "vertical_image_path",
+        "cache_field": "vertical_cache_key",
+        "clip_field": "vertical_clip_path",
+        "status_field": "video_vertical",
+        "cache_status_field": "video_vertical",
+        "directory_field": "videos_vertical_dir",
+        "width_field": "vertical_width",
+        "height_field": "vertical_height",
+    },
+}
 
 
 def _save_storyboard(path: Path, storyboard: dict[str, Any]) -> None:
@@ -57,15 +61,15 @@ def _run_ffmpeg(
     output_path: Path,
     duration: float,
     shot_order: int,
+    width: int,
+    height: int,
 ) -> int:
-    """Create a 1080p Ken Burns clip from one still image."""
+    """Create an MP4 clip with a slow Ken Burns camera movement."""
     fps = config.film.fps
-    width = config.film.width
-    height = config.film.height
     frames = round(duration * fps)
 
-    # Alternate slow push-in and pull-out movements.
     zoom_rate = 0.08 / max(frames - 1, 1)
+
     if shot_order % 2:
         zoom = f"min(1+{zoom_rate:.8f}*on,1.08)"
     else:
@@ -73,8 +77,8 @@ def _run_ffmpeg(
 
     video_filter = (
         f"zoompan=z='{zoom}':"
-        f"x='iw/2-(iw/zoom/2)':"
-        f"y='ih/2-(ih/zoom/2)':"
+        "x='iw/2-(iw/zoom/2)':"
+        "y='ih/2-(ih/zoom/2)':"
         f"d=1:s={width}x{height}:fps={fps},"
         "format=yuv420p"
     )
@@ -123,71 +127,125 @@ def _is_valid_clip(path: Path) -> bool:
     return path.is_file() and path.stat().st_size > 10_000
 
 
+def _resolve_project_path(config: AppConfig, value: str) -> Path:
+    path = Path(value)
+    if not path.is_absolute():
+        path = config.paths.root_dir / path
+    return path
+
+
 def run_video_stage(
     config: AppConfig,
     cache: StageCache,
     shot_ids: list[str] | None = None,
     force: bool = False,
+    formats: list[str] | None = None,
 ) -> None:
-    """Generate video clips for selected shots or all storyboard shots."""
+    """
+    Generate video clips for selected shots and formats.
+
+    Defaults to horizontal to preserve the original CLI behavior.
+    Supported formats: horizontal, vertical.
+    """
     config.paths.ensure_directories()
 
+    selected_formats = formats or ["horizontal"]
+
+    invalid_formats = set(selected_formats) - set(FORMATS)
+    if invalid_formats:
+        raise ValueError(
+            f"Unsupported formats: {sorted(invalid_formats)}. "
+            f"Choose from: {sorted(FORMATS)}"
+        )
+
     storyboard_path = config.paths.storyboard_path
-    storyboard = json.loads(storyboard_path.read_text(encoding="utf-8"))
+    storyboard = json.loads(
+        storyboard_path.read_text(encoding="utf-8")
+    )
 
     shots = storyboard.get("shots", [])
-    selected_ids = set(shot_ids or [])
+    requested_ids = set(shot_ids or [])
 
     selected_shots = [
         shot for shot in shots
-        if not selected_ids or shot["shot_id"] in selected_ids
+        if not requested_ids or shot["shot_id"] in requested_ids
     ]
 
     if not selected_shots:
         raise ValueError("No matching shots found.")
 
     found_ids = {shot["shot_id"] for shot in selected_shots}
-    missing_ids = selected_ids - found_ids
+    missing_ids = requested_ids - found_ids
+
     if missing_ids:
         raise ValueError(f"Unknown shot IDs: {sorted(missing_ids)}")
 
-    fps = config.film.fps
-    width = config.film.width
-    height = config.film.height
-
     logger.info(
-        "Starting FFmpeg animation for %d shot(s).",
+        "Starting video generation: %d shot(s), formats=%s",
         len(selected_shots),
+        selected_formats,
     )
 
-    for shot in selected_shots:
-        shot_id = shot["shot_id"]
-        started = time.perf_counter()
-        timestamp = datetime.now(timezone.utc).isoformat()
+    for output_format in selected_formats:
+        spec = FORMATS[output_format]
 
-        keyframe_path = Path(shot["keyframe"]["image_path"])
-        if not keyframe_path.is_absolute():
-            keyframe_path = config.paths.root_dir / keyframe_path
+        width = getattr(config.film, spec["width_field"])
+        height = getattr(config.film, spec["height_field"])
+        fps = config.film.fps
 
-        if not keyframe_path.is_file():
-            raise FileNotFoundError(
-                f"Keyframe for {shot_id} not found: {keyframe_path}"
+        output_dir = getattr(
+            config.paths,
+            spec["directory_field"],
+        )
+
+        logger.info(
+            "Generating %s clips at %dx%d.",
+            output_format,
+            width,
+            height,
+        )
+
+        for shot in selected_shots:
+            shot_id = shot["shot_id"]
+            started = time.perf_counter()
+            timestamp = datetime.now(timezone.utc).isoformat()
+
+            keyframe = shot.get("keyframe", {})
+            image_value = keyframe.get(spec["image_field"])
+
+            if not image_value:
+                raise ValueError(
+                    f"{shot_id} has no {spec['image_field']} "
+                    f"for {output_format} generation."
+                )
+
+            image_path = _resolve_project_path(config, image_value)
+
+            if not image_path.is_file():
+                raise FileNotFoundError(
+                    f"Keyframe for {shot_id} not found: {image_path}"
+                )
+
+            duration = float(shot["duration_sec"])
+            frames = round(duration * fps)
+
+            output_path = output_dir / f"{shot_id}.mp4"
+            relative_output = output_path.relative_to(
+                config.paths.root_dir
+            ).as_posix()
+
+            motion_prompt = shot.get("video", {}).get(
+                "motion_prompt", ""
             )
 
-        duration = float(shot["duration_sec"])
-        frames = round(duration * fps)
+            keyframe_cache_key = keyframe.get(
+                spec["cache_field"]
+            )
 
-        output_path = config.paths.videos_dir / f"{shot_id}.mp4"
-        relative_output = output_path.relative_to(
-            config.paths.root_dir
-        ).as_posix()
-
-        motion_prompt = shot["video"].get("motion_prompt", "")
-        cache_key = compute_cache_key(
-            "video",
-            {
+            cache_payload = {
                 "shot_id": shot_id,
-                "keyframe_cache_key": shot["keyframe"].get("cache_key"),
+                "format": output_format,
+                "keyframe_cache_key": keyframe_cache_key,
                 "motion_prompt": motion_prompt,
                 "duration_sec": duration,
                 "fps": fps,
@@ -196,146 +254,181 @@ def run_video_stage(
                 "method": "ffmpeg_ken_burns",
                 "codec": config.ffmpeg.video_codec,
                 "crf": config.ffmpeg.crf,
-            },
-        )
+            }
 
-        parameters = {
-            "shot_id": shot_id,
-            "method": "ffmpeg_ken_burns",
-            "duration_sec": duration,
-            "fps": fps,
-            "frames": frames,
-            "width": width,
-            "height": height,
-            "output_path": relative_output,
-        }
-
-        metadata = (
-            cache.get_metadata("video", cache_key)
-            if cache.enabled and not force
-            else None
-        )
-
-        if (
-            metadata
-            and _is_valid_clip(output_path)
-        ):
-            shot["video"]["clip_path"] = relative_output
-            shot["video"]["cache_key"] = cache_key
-            shot["video"]["fps"] = fps
-            shot["stage_status"]["video"] = "cached"
-            _save_storyboard(storyboard_path, storyboard)
-
-            _append_run(
-                config.paths.runs_log_path,
-                {
-                    "timestamp_utc": timestamp,
-                    "stage": "video",
-                    "operation": "ffmpeg_ken_burns",
-                    "status": "cache_hit",
-                    "model": "FFmpeg",
-                    "parameters": parameters,
-                    "seed": None,
-                    "latency_ms": round(
-                        (time.perf_counter() - started) * 1000, 2
-                    ),
-                    "usage": None,
-                    "cost_usd": 0,
-                    "notes": "Reused existing video clip.",
-                },
-            )
-            logger.info("%s: reused cached clip.", shot_id)
-            continue
-
-        try:
-            logger.info(
-                "Animating %s (%.1fs, %d frames)...",
-                shot_id,
-                duration,
-                frames,
+            cache_key = compute_cache_key(
+                "video",
+                cache_payload,
             )
 
-            _run_ffmpeg(
-                config=config,
-                image_path=keyframe_path,
-                output_path=output_path,
-                duration=duration,
-                shot_order=int(shot["order"]),
+            parameters = {
+                "shot_id": shot_id,
+                "format": output_format,
+                "method": "ffmpeg_ken_burns",
+                "duration_sec": duration,
+                "fps": fps,
+                "frames": frames,
+                "width": width,
+                "height": height,
+                "output_path": relative_output,
+            }
+
+            metadata = (
+                cache.get_metadata("video", cache_key)
+                if cache.enabled and not force
+                else None
             )
 
-            shot["video"]["clip_path"] = relative_output
-            shot["video"]["cache_key"] = cache_key
-            shot["video"]["fps"] = fps
-            shot["stage_status"]["video"] = "generated"
+            video_data = shot.setdefault("video", {})
+            status_field = spec["status_field"]
 
-            if cache.enabled:
-                cache.put_metadata(
-                    "video",
-                    cache_key,
+            if metadata and _is_valid_clip(output_path):
+                video_data[spec["clip_field"]] = relative_output
+                video_data[f"{output_format}_cache_key"] = cache_key
+                video_data[f"{output_format}_fps"] = fps
+                shot.setdefault("stage_status", {})[
+                    status_field
+                ] = "cached"
+
+                _save_storyboard(storyboard_path, storyboard)
+
+                _append_run(
+                    config.paths.runs_log_path,
                     {
-                        "shot_id": shot_id,
-                        "output_path": relative_output,
-                        "method": "ffmpeg_ken_burns",
-                        "created_at_utc": timestamp,
+                        "timestamp_utc": timestamp,
+                        "stage": "video",
+                        "operation": "ffmpeg_ken_burns",
+                        "status": "cache_hit",
+                        "format": output_format,
+                        "model": "FFmpeg",
+                        "parameters": parameters,
+                        "seed": None,
+                        "latency_ms": round(
+                            (time.perf_counter() - started) * 1000,
+                            2,
+                        ),
+                        "usage": None,
+                        "cost_usd": 0,
+                        "notes": "Reused existing video clip.",
                     },
                 )
 
-            _save_storyboard(storyboard_path, storyboard)
+                logger.info(
+                    "%s (%s): reused cached clip.",
+                    shot_id,
+                    output_format,
+                )
+                continue
 
-            latency_ms = round(
-                (time.perf_counter() - started) * 1000, 2
-            )
+            try:
+                logger.info(
+                    "Animating %s (%s): %.1fs, %d frames, %dx%d",
+                    shot_id,
+                    output_format,
+                    duration,
+                    frames,
+                    width,
+                    height,
+                )
 
-            _append_run(
-                config.paths.runs_log_path,
-                {
-                    "timestamp_utc": timestamp,
-                    "stage": "video",
-                    "operation": "ffmpeg_ken_burns",
-                    "status": "success",
-                    "model": "FFmpeg",
-                    "parameters": parameters,
-                    "seed": None,
-                    "latency_ms": latency_ms,
-                    "usage": None,
-                    "cost_usd": 0,
-                    "notes": (
-                        "Still image animated with a slow camera zoom. "
-                        "No AI character motion was generated."
-                    ),
-                },
-            )
+                _run_ffmpeg(
+                    config=config,
+                    image_path=image_path,
+                    output_path=output_path,
+                    duration=duration,
+                    shot_order=int(shot["order"]),
+                    width=width,
+                    height=height,
+                )
 
-            logger.info(
-                "%s completed: %s (%.2fs)",
-                shot_id,
-                relative_output,
-                duration,
-            )
+                video_data[spec["clip_field"]] = relative_output
+                video_data[f"{output_format}_cache_key"] = cache_key
+                video_data[f"{output_format}_fps"] = fps
 
-        except Exception as exc:
-            shot["stage_status"]["video"] = "failed"
-            _save_storyboard(storyboard_path, storyboard)
+                shot.setdefault("stage_status", {})[
+                    status_field
+                ] = "generated"
 
-            _append_run(
-                config.paths.runs_log_path,
-                {
-                    "timestamp_utc": timestamp,
-                    "stage": "video",
-                    "operation": "ffmpeg_ken_burns",
-                    "status": "error",
-                    "model": "FFmpeg",
-                    "parameters": parameters,
-                    "seed": None,
-                    "latency_ms": round(
-                        (time.perf_counter() - started) * 1000, 2
-                    ),
-                    "usage": None,
-                    "cost_usd": 0,
-                    "notes": str(exc)[:1000],
-                },
-            )
-            logger.exception("Video generation failed for %s", shot_id)
-            raise
+                if cache.enabled:
+                    cache.put_metadata(
+                        "video",
+                        cache_key,
+                        {
+                            "shot_id": shot_id,
+                            "format": output_format,
+                            "output_path": relative_output,
+                            "method": "ffmpeg_ken_burns",
+                            "created_at_utc": timestamp,
+                        },
+                    )
+
+                _save_storyboard(storyboard_path, storyboard)
+
+                latency_ms = round(
+                    (time.perf_counter() - started) * 1000,
+                    2,
+                )
+
+                _append_run(
+                    config.paths.runs_log_path,
+                    {
+                        "timestamp_utc": timestamp,
+                        "stage": "video",
+                        "operation": "ffmpeg_ken_burns",
+                        "status": "success",
+                        "format": output_format,
+                        "model": "FFmpeg",
+                        "parameters": parameters,
+                        "seed": None,
+                        "latency_ms": latency_ms,
+                        "usage": None,
+                        "cost_usd": 0,
+                        "notes": (
+                            "Still image animated with a slow camera "
+                            "zoom. No AI character motion was generated."
+                        ),
+                    },
+                )
+
+                logger.info(
+                    "%s (%s) completed: %s",
+                    shot_id,
+                    output_format,
+                    relative_output,
+                )
+
+            except Exception as exc:
+                shot.setdefault("stage_status", {})[
+                    status_field
+                ] = "failed"
+                _save_storyboard(storyboard_path, storyboard)
+
+                _append_run(
+                    config.paths.runs_log_path,
+                    {
+                        "timestamp_utc": timestamp,
+                        "stage": "video",
+                        "operation": "ffmpeg_ken_burns",
+                        "status": "error",
+                        "format": output_format,
+                        "model": "FFmpeg",
+                        "parameters": parameters,
+                        "seed": None,
+                        "latency_ms": round(
+                            (time.perf_counter() - started) * 1000,
+                            2,
+                        ),
+                        "usage": None,
+                        "cost_usd": 0,
+                        "notes": str(exc)[:1000],
+                    },
+                )
+
+                logger.exception(
+                    "Video generation failed for %s (%s)",
+                    shot_id,
+                    output_format,
+                )
+                raise
 
     logger.info("Video stage finished.")
