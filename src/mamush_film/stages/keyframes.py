@@ -1,28 +1,9 @@
-# """Stage 2 (stub): Keyframe image generation via Cloudflare Workers AI."""
-
-# from __future__ import annotations
-
-# import logging
-
-# from mamush_film.cache import StageCache
-# from mamush_film.config import AppConfig
-
-# logger = logging.getLogger("mamush_film.stages.keyframes")
-
-
-# def run_keyframes_stage(config: AppConfig, cache: StageCache) -> None:
-#     """Placeholder for Cloudflare Workers AI keyframe generation (not yet implemented)."""
-#     logger.info("Stage 'keyframes' is not implemented yet; skipping API calls.")
-#     raise NotImplementedError(
-#         "Stage 2 (Cloudflare Workers AI keyframes) is a placeholder and not yet implemented."
-#     )
-
-
-"""Stage 2: Generate cinematic storyboard keyframes with Cloudflare Workers AI."""
 
 from __future__ import annotations
 
 import base64
+import hashlib
+import io
 import json
 import logging
 import re
@@ -34,125 +15,236 @@ from typing import Any
 import requests
 from PIL import Image, ImageOps
 
-from mamush_film.cache import StageCache
 from mamush_film.config import AppConfig
 
-logger = logging.getLogger("mamush_film.stages.keyframes")
+logger = logging.getLogger(__name__)
 
-STAGE_NAME = "keyframes"
-MODEL_STEPS = 8
-IMAGE_FORMAT = "PNG"
+MODEL_STEPS = 4
+REFERENCE_MAX_SIZE = (480, 480)
+REQUEST_TIMEOUT = 240
+
+FORMATS = {
+    "horizontal": {
+        "width": 1920,
+        "height": 1080,
+        "directory": "keyframes_dir",
+        "framing": (
+            "Create a cinematic 16:9 widescreen landscape composition. "
+            "Use intentional cinematic framing, environmental depth, "
+            "and balanced character placement. Keep important subjects "
+            "inside the frame with room around them."
+        ),
+    },
+    "vertical": {
+        "width": 1080,
+        "height": 1920,
+        "directory": "keyframes_vertical_dir",
+        "framing": (
+            "Create a native 9:16 vertical portrait composition, "
+            "not a cropped landscape image. Compose specifically for "
+            "a vertical mobile film. Position the main subject naturally "
+            "within the portrait frame. Preserve faces, hands, and "
+            "important story details. Leave a little visual breathing "
+            "room near the bottom for subtitles, but do not generate "
+            "any text or subtitles."
+        ),
+    },
+}
+
+
+def _project_root(config: AppConfig) -> Path:
+    return Path.cwd()
+
+
+def _storyboard_path(config: AppConfig) -> Path:
+    return _project_root(config) / "storyboards" / "storyboard.json"
 
 
 def _append_run_record(path: Path, record: dict[str, Any]) -> None:
-    """Append one structured execution record to runs.jsonl."""
     path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("a", encoding="utf-8") as handle:
-        handle.write(json.dumps(record, ensure_ascii=False) + "\n")
+    with path.open("a", encoding="utf-8") as file:
+        file.write(json.dumps(record, ensure_ascii=False) + "\n")
 
 
 def _save_storyboard(path: Path, storyboard: dict[str, Any]) -> None:
-    """Atomically save storyboard updates."""
     path.parent.mkdir(parents=True, exist_ok=True)
-    temporary_path = path.with_suffix(".json.tmp")
+    temporary = path.with_suffix(".tmp")
 
-    temporary_path.write_text(
-        json.dumps(storyboard, ensure_ascii=False, indent=2) + "\n",
+    temporary.write_text(
+        json.dumps(storyboard, ensure_ascii=False, indent=2),
         encoding="utf-8",
     )
-    temporary_path.replace(path)
+
+    temporary.replace(path)
 
 
-def _flatten_text(value: Any) -> list[str]:
-    """Extract readable text from nested character/style configuration."""
+def _flatten_text(value: Any) -> str:
     if isinstance(value, str):
-        return [value.strip()] if value.strip() else []
+        return value
 
     if isinstance(value, list):
-        result: list[str] = []
-        for item in value:
-            result.extend(_flatten_text(item))
-        return result
+        return " ".join(
+            _flatten_text(item)
+            for item in value
+            if item is not None
+        )
 
     if isinstance(value, dict):
-        result: list[str] = []
-        for key, item in value.items():
-            if key.lower() in {"id", "character_id"}:
-                continue
-            result.extend(_flatten_text(item))
-        return result
+        return " ".join(
+            _flatten_text(item)
+            for key, item in value.items()
+            if key.lower() not in {"id", "character_id"}
+            and item is not None
+        )
 
-    return []
+    return ""
 
 
 def _character_descriptions(
     storyboard: dict[str, Any],
     character_ids: list[str],
-) -> list[str]:
-    """Find the visual descriptions for the characters in this shot."""
-    characters = storyboard.get("characters", [])
-    descriptions: list[str] = []
+) -> str:
+    characters = storyboard.get("characters", {})
 
-    if isinstance(characters, dict):
-        characters = list(characters.values())
+    descriptions = []
 
-    for character in characters:
-        if not isinstance(character, dict):
-            continue
+    if isinstance(characters, list):
+        characters = {
+            item.get("id"): item
+            for item in characters
+            if isinstance(item, dict) and item.get("id")
+        }
 
-        character_id = character.get("id") or character.get("character_id")
-        if character_id not in character_ids:
-            continue
+    for character_id in character_ids:
+        character = characters.get(character_id)
 
-        parts = _flatten_text(character)
-        if parts:
-            descriptions.append("; ".join(parts))
+        if character:
+            description = _flatten_text(character)
+            if description:
+                descriptions.append(
+                    f"Character {character_id}: {description}"
+                )
 
-    return descriptions
+    return "\n".join(descriptions)
+
+
+def _reference_hash(path: Path) -> str:
+    digest = hashlib.sha256()
+
+    with path.open("rb") as file:
+        for chunk in iter(lambda: file.read(1024 * 1024), b""):
+            digest.update(chunk)
+
+    return digest.hexdigest()
+
+
+def _prepare_reference(path: Path) -> bytes:
+    if not path.is_file():
+        raise FileNotFoundError(
+            f"Character reference image not found: {path}"
+        )
+
+    with Image.open(path) as original:
+        image = ImageOps.exif_transpose(original).convert("RGB")
+        image.thumbnail(
+            REFERENCE_MAX_SIZE,
+            Image.Resampling.LANCZOS,
+        )
+
+        output = io.BytesIO()
+        image.save(output, format="PNG", optimize=True)
+
+        return output.getvalue()
 
 
 def _build_prompt(
     storyboard: dict[str, Any],
     shot: dict[str, Any],
+    output_format: str,
 ) -> str:
-    """Combine shot direction, character continuity, and the visual style bible."""
-    keyframe = shot["keyframe"]
-    prompt = keyframe["prompt"].replace("[PLACEHOLDER]", "").strip()
+    keyframe = shot.get("keyframe", {})
 
-    style_parts = _flatten_text(storyboard.get("style_guide", {}))
-    character_parts = _character_descriptions(
+    shot_prompt = (
+        keyframe.get("prompt")
+        or shot.get("visual_prompt")
+        or shot.get("prompt")
+        or ""
+    )
+
+    character_ids = shot.get("character_ids", [])
+
+    if isinstance(character_ids, str):
+        character_ids = [character_ids]
+
+    character_text = _character_descriptions(
         storyboard,
-        shot.get("character_ids", []),
+        character_ids,
     )
 
-    sections = [
-        prompt,
-        "CINEMATIC STYLE: " + "; ".join(style_parts),
-    ]
-
-    if character_parts:
-        sections.append(
-            "CHARACTER CONTINUITY: " + "; ".join(character_parts)
-        )
-
-    sections.append(
-        "Create one coherent cinematic film frame. "
-        "Natural human anatomy, realistic Ethiopian highland environment, "
-        "consistent character appearance, believable lighting, "
-        "documentary-inspired cinematic realism. "
-        "No captions, no typography, no logos, no watermark."
+    style_guide = _flatten_text(
+        storyboard.get("style_guide", "")
     )
 
-    negative_prompt = keyframe.get("negative_prompt", "").strip()
-    if negative_prompt:
-        sections.append("AVOID: " + negative_prompt)
+    framing = FORMATS[output_format]["framing"]
 
-    return "\n\n".join(section for section in sections if section.strip())
+    prompt = f"""
+FILM: Mamush — ማሙሽ - የእናት ፍቅር
+VISUAL STYLE: Cinematic photorealism, emotionally expressive,
+natural skin texture, realistic anatomy, beautiful natural lighting.
+
+STORYBOARD SHOT:
+{shot_prompt}
+
+CHARACTER CONTINUITY:
+{character_text}
+
+VISUAL STYLE GUIDE:
+{style_guide}
+
+CHARACTER REFERENCE INSTRUCTIONS:
+Reference image 0 is the mother.
+Reference image 1 is Mamush, the boy.
+
+Use these images as identity and appearance references.
+They are NOT images to copy, paste, reproduce, or place directly
+inside the final scene.
+
+Preserve the recognizable facial appearance, age, hairstyle,
+skin tone, and defining clothing details of the characters.
+Generate a completely new cinematic scene that follows the
+storyboard action, location, camera angle, and emotion.
+
+The mother should retain her Habesha/Ethiopian appearance and
+traditional clothing identity. The boy should retain his short
+dark hair, blue shirt, and colorful beaded necklace.
+
+Only include characters required by this storyboard shot.
+Do not introduce the mother or boy into a scene where the
+storyboard does not call for them.
+
+SETTING:
+A believable rural Ethiopian / Habesha environment where
+appropriate to the storyboard. Use authentic architecture,
+landscape, materials, and cultural details. Avoid generic
+foreign village settings.
+
+COMPOSITION:
+{framing}
+
+STRICT NEGATIVE INSTRUCTIONS:
+No text, captions, subtitles, lettering, logos, watermarks,
+borders, collage layouts, duplicated characters, extra limbs,
+deformed hands, distorted faces, plastic skin, cartoon style,
+or artificial-looking facial features.
+
+Create one coherent, cinematic film frame.
+""".strip()
+
+    return re.sub(r"\n{3,}", "\n\n", prompt)
 
 
 def _decode_cloudflare_image(response: requests.Response) -> bytes:
-    """Extract image bytes from a Cloudflare Workers AI response."""
-    content_type = response.headers.get("Content-Type", "").lower()
+    content_type = response.headers.get("content-type", "")
 
     if content_type.startswith("image/"):
         return response.content
@@ -162,314 +254,428 @@ def _decode_cloudflare_image(response: requests.Response) -> bytes:
     except ValueError as exc:
         raise RuntimeError(
             f"Cloudflare returned an unexpected response: "
-            f"{response.text[:500]}"
+            f"{response.text[:1000]}"
         ) from exc
 
-    if payload.get("success") is False:
-        errors = payload.get("errors", [])
-        raise RuntimeError(f"Cloudflare API error: {errors}")
+    result = payload.get("result", payload)
 
-    result = payload.get("result") or {}
-    encoded_image = result.get("image")
+    image_data = (
+        result.get("image")
+        or result.get("images", [None])[0]
+    )
 
-    if not encoded_image:
+    if not image_data:
         raise RuntimeError(
-            "Cloudflare response did not contain result.image. "
-            f"Response keys: {list(payload.keys())}"
+            "Cloudflare response did not contain an image. "
+            f"Response: {json.dumps(payload)[:1500]}"
         )
 
-    # Accommodate either raw base64 or a data URI.
-    if isinstance(encoded_image, str) and encoded_image.startswith("data:"):
-        encoded_image = encoded_image.split(",", 1)[1]
+    if isinstance(image_data, str):
+        if image_data.startswith("data:"):
+            image_data = image_data.split(",", 1)[1]
 
-    try:
-        return base64.b64decode(encoded_image, validate=True)
-    except Exception as exc:
-        raise RuntimeError("Could not decode the generated image.") from exc
+        return base64.b64decode(image_data)
+
+    raise RuntimeError("Unsupported Cloudflare image response format.")
 
 
-def _normalize_image(image_bytes: bytes, output_path: Path, width: int, height: int) -> None:
-    """Validate, center-crop to target aspect ratio, and resize without distortion."""
+def _normalize_image(
+    image_bytes: bytes,
+    output_path: Path,
+    width: int,
+    height: int,
+) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    temporary_path = output_path.with_suffix(".tmp.png")
+    with Image.open(io.BytesIO(image_bytes)) as original:
+        image = ImageOps.exif_transpose(original).convert("RGB")
 
-    try:
-        from io import BytesIO
+        target_ratio = width / height
+        actual_ratio = image.width / image.height
 
-        with Image.open(BytesIO(image_bytes)) as source:
-            source.verify()
-
-        with Image.open(BytesIO(image_bytes)) as source:
-            image = ImageOps.exif_transpose(source).convert("RGB")
-
+        # Only crop when the generated aspect ratio differs.
+        # Keep the crop centered to preserve the intended composition.
+        if abs(actual_ratio - target_ratio) > 0.015:
             image = ImageOps.fit(
                 image,
                 (width, height),
                 method=Image.Resampling.LANCZOS,
                 centering=(0.5, 0.5),
             )
+        else:
+            image = image.resize(
+                (width, height),
+                Image.Resampling.LANCZOS,
+            )
 
-            image.save(temporary_path, format=IMAGE_FORMAT, optimize=True)
-
-        # Verify the saved output before making it the final artifact.
-        with Image.open(temporary_path) as check:
-            check.verify()
-
-        temporary_path.replace(output_path)
-
-    except Exception:
-        temporary_path.unlink(missing_ok=True)
-        raise
+        image.save(
+            output_path,
+            format="PNG",
+            optimize=True,
+        )
 
 
-def _cache_key(model: str, prompt: str, shot_id: str, width: int, height: int) -> str:
-    """Build a deterministic key for this generated image."""
-    from mamush_film.cache import compute_cache_key
+def _cache_key(
+    model: str,
+    prompt: str,
+    shot_id: str,
+    output_format: str,
+    width: int,
+    height: int,
+    mother_hash: str,
+    mamush_hash: str,
+) -> str:
+    payload = {
+        "model": model,
+        "prompt": prompt,
+        "shot_id": shot_id,
+        "format": output_format,
+        "width": width,
+        "height": height,
+        "mother_reference": mother_hash,
+        "mamush_reference": mamush_hash,
+        "generation": "flux2-klein-9b-reference-v1",
+    }
 
-    return compute_cache_key(
-        STAGE_NAME,
-        {
-            "model": model,
-            "shot_id": shot_id,
-            "prompt": prompt,
-            "steps": MODEL_STEPS,
-            "output_width": width,
-            "output_height": height,
-            "output_format": IMAGE_FORMAT,
-        },
+    serialized = json.dumps(
+        payload,
+        sort_keys=True,
+        ensure_ascii=False,
     )
 
+    return hashlib.sha256(
+        serialized.encode("utf-8")
+    ).hexdigest()
 
-def _cached_output(
-    cache: StageCache,
-    cache_key: str,
-    output_path: Path,
-) -> bool:
-    """Return True when a valid cached artifact already exists."""
-    if not cache.enabled:
-        return False
 
-    metadata = cache.get_metadata(STAGE_NAME, cache_key)
-    if not metadata:
-        return False
+def _generate_image(
+    endpoint: str,
+    token: str,
+    prompt: str,
+    mother_bytes: bytes,
+    mamush_bytes: bytes,
+    width: int,
+    height: int,
+    guidance: float,
+) -> bytes:
+    headers = {
+        "Authorization": f"Bearer {token}",
+    }
 
-    cached_path = Path(metadata.get("output_path", str(output_path)))
-    if not cached_path.is_absolute():
-        cached_path = output_path.parent.parent.parent / cached_path
+    files = {
+        "input_image_0": (
+            "mother_reference.png",
+            mother_bytes,
+            "image/png",
+        ),
+        "input_image_1": (
+            "mamush_reference.png",
+            mamush_bytes,
+            "image/png",
+        ),
+    }
 
-    candidate = cached_path if cached_path.is_file() else output_path
-    if not candidate.is_file():
-        return False
+    data = {
+        "prompt": prompt,
+        "width": str(width),
+        "height": str(height),
+        "guidance": str(guidance),
+    }
 
-    try:
-        with Image.open(candidate) as image:
-            image.verify()
-        return candidate.resolve() == output_path.resolve()
-    except Exception:
-        return False
+    response = requests.post(
+        endpoint,
+        headers=headers,
+        files=files,
+        data=data,
+        timeout=REQUEST_TIMEOUT,
+    )
+
+    if not response.ok:
+        raise RuntimeError(
+            f"Cloudflare API error {response.status_code}: "
+            f"{response.text[:2000]}"
+        )
+
+    return _decode_cloudflare_image(response)
 
 
 def run_keyframes_stage(
     config: AppConfig,
-    cache: StageCache,
+    cache=None,
     shot_ids: list[str] | None = None,
     force: bool = False,
-) -> None:
-    """Generate keyframes for selected shots, or all shots when none are selected."""
-    config.require_stage_credentials(STAGE_NAME)
+    formats: list[str] | None = None,
+) -> dict[str, Any]:
+    """
+    Generate storyboard keyframes using both character references.
+
+    By default, generates horizontal and vertical images for every shot.
+    Existing output files are skipped unless force=True.
+    """
+
+    del cache  # Cache identity is recorded in the run log.
+
+    if formats is None:
+        formats = ["horizontal", "vertical"]
+
+    invalid_formats = set(formats) - set(FORMATS)
+
+    if invalid_formats:
+        raise ValueError(
+            f"Unsupported formats: {sorted(invalid_formats)}"
+        )
+
     config.paths.ensure_directories()
 
-    storyboard_path = config.paths.storyboard_path
+    storyboard_path = _storyboard_path(config)
+
     if not storyboard_path.is_file():
-        raise FileNotFoundError(f"Storyboard not found: {storyboard_path}")
+        raise FileNotFoundError(
+            f"Storyboard not found: {storyboard_path}"
+        )
 
-    storyboard = json.loads(storyboard_path.read_text(encoding="utf-8"))
-    shots = storyboard.get("shots", [])
-
-    selected_ids = set(shot_ids or [])
-    selected_shots = [
-        shot for shot in shots
-        if not selected_ids or shot.get("shot_id") in selected_ids
-    ]
-
-    if not selected_shots:
-        raise ValueError(
-            f"No matching shots found for: {sorted(selected_ids)}")
-
-    found_ids = {shot["shot_id"] for shot in selected_shots}
-    missing_ids = selected_ids - found_ids
-    if missing_ids:
-        raise ValueError(f"Unknown shot IDs: {sorted(missing_ids)}")
-
-    endpoint = config.cloudflare.endpoint_url
-    token = config.cloudflare.api_token
-
-    width = config.film.width
-    height = config.film.height
-    model = config.cloudflare.image_model
-
-    logger.info(
-        "Starting keyframe generation: %d shot(s), model=%s",
-        len(selected_shots),
-        model,
+    storyboard = json.loads(
+        storyboard_path.read_text(encoding="utf-8")
     )
 
-    for shot in selected_shots:
-        shot_id = shot["shot_id"]
-        started = time.perf_counter()
-        timestamp = datetime.now(timezone.utc).isoformat()
+    mother_path = Path(config.paths.mother_reference_path)
+    mamush_path = Path(config.paths.mamush_reference_path)
 
-        output_path = config.paths.keyframes_dir / f"{shot_id}.png"
-        relative_output_path = output_path.relative_to(
-            config.paths.root_dir
-        ).as_posix()
+    mother_hash = _reference_hash(mother_path)
+    mamush_hash = _reference_hash(mamush_path)
 
-        prompt = _build_prompt(storyboard, shot)
-        storyboard_seed = shot["keyframe"].get("seed")
-        cache_key = _cache_key(model, prompt, shot_id, width, height)
+    mother_bytes = _prepare_reference(mother_path)
+    mamush_bytes = _prepare_reference(mamush_path)
 
-        parameters = {
-            "shot_id": shot_id,
-            "steps": MODEL_STEPS,
-            "output_width": width,
-            "output_height": height,
-            "output_format": IMAGE_FORMAT,
-            "output_path": relative_output_path,
-            "seed_supported_by_model": False,
-            "prompt": prompt,
+    cloudflare = config.cloudflare
+
+    endpoint = cloudflare.endpoint_url
+    token = cloudflare.api_token
+    model = cloudflare.image_model
+    guidance = cloudflare.guidance
+
+    if not endpoint or not token:
+        raise RuntimeError(
+            "Cloudflare endpoint or API token is missing. "
+            "Check your existing .env configuration."
+        )
+
+    shots = storyboard.get("shots", [])
+
+    if shot_ids:
+        requested = set(shot_ids)
+        shots = [
+            shot for shot in shots
+            if shot.get("shot_id", shot.get("id")) in requested
+        ]
+
+        found = {
+            shot.get("shot_id", shot.get("id"))
+            for shot in shots
         }
+        missing = requested - found
 
-        if not force and _cached_output(cache, cache_key, output_path):
-            shot["keyframe"]["image_path"] = relative_output_path
-            shot["keyframe"]["cache_key"] = cache_key
-            shot["stage_status"]["keyframe"] = "cached"
-            _save_storyboard(storyboard_path, storyboard)
-
-            _append_run_record(
-                config.paths.runs_log_path,
-                {
-                    "timestamp_utc": timestamp,
-                    "stage": STAGE_NAME,
-                    "operation": "cloudflare_image",
-                    "status": "cache_hit",
-                    "model": model,
-                    "parameters": parameters,
-                    "seed": storyboard_seed,
-                    "latency_ms": round(
-                        (time.perf_counter() - started) * 1000, 2
-                    ),
-                    "usage": None,
-                    "cost_usd": 0,
-                    "notes": "Reused previously generated keyframe.",
-                },
+        if missing:
+            raise ValueError(
+                f"Shots not found in storyboard: {sorted(missing)}"
             )
 
-            logger.info("%s: using cached keyframe", shot_id)
+    if not shots:
+        raise RuntimeError("No storyboard shots selected.")
+
+    log_path = (
+        _project_root(config)
+        / "assets"
+        / "output"
+        / "keyframe_generation.jsonl"
+    )
+
+    results = {
+        "generated": [],
+        "skipped": [],
+        "failed": [],
+    }
+
+    for shot in shots:
+        shot_id = shot.get("shot_id", shot.get("id"))
+
+        if not shot_id:
+            logger.warning("Skipping storyboard entry without an ID.")
             continue
 
-        try:
-            logger.info("Generating %s...", shot_id)
+        shot.setdefault("keyframe", {})
+        shot.setdefault("stage_status", {})
 
-            response = requests.post(
-                endpoint,
-                headers={
-                    "Authorization": f"Bearer {token}",
-                    "Content-Type": "application/json",
-                },
-                json={
-                    "prompt": prompt,
-                    "steps": MODEL_STEPS,
-                },
-                timeout=config.cloudflare.timeout_sec,
+        for output_format in formats:
+            spec = FORMATS[output_format]
+
+            width = spec["width"]
+            height = spec["height"]
+
+            output_dir = getattr(
+                config.paths,
+                spec["directory"],
             )
 
-            response.raise_for_status()
-            image_bytes = _decode_cloudflare_image(response)
+            output_path = Path(output_dir) / f"{shot_id}.png"
 
-            _normalize_image(
-                image_bytes,
-                output_path,
+            prompt = _build_prompt(
+                storyboard,
+                shot,
+                output_format,
+            )
+
+            key = _cache_key(
+                model,
+                prompt,
+                shot_id,
+                output_format,
+                width,
+                height,
+                mother_hash,
+                mamush_hash,
+            )
+
+            if output_path.is_file() and not force:
+                try:
+                    with Image.open(output_path) as existing:
+                        existing.verify()
+
+                    logger.info(
+                        "Skipping existing %s keyframe: %s",
+                        output_format,
+                        shot_id,
+                    )
+
+                    results["skipped"].append(
+                        f"{shot_id}:{output_format}"
+                    )
+                    continue
+
+                except Exception:
+                    logger.warning(
+                        "Existing keyframe is invalid; regenerating: %s",
+                        output_path,
+                    )
+
+            logger.info(
+                "Generating %s keyframe for %s (%sx%s)",
+                output_format,
+                shot_id,
                 width,
                 height,
             )
 
-            shot["keyframe"]["image_path"] = relative_output_path
-            shot["keyframe"]["cache_key"] = cache_key
-            shot["stage_status"]["keyframe"] = "generated"
+            started = time.time()
 
-            if cache.enabled:
-                cache.put_metadata(
-                    STAGE_NAME,
-                    cache_key,
-                    {
-                        "shot_id": shot_id,
-                        "model": model,
-                        "output_path": relative_output_path,
-                        "width": width,
-                        "height": height,
-                        "created_at_utc": timestamp,
-                    },
+            try:
+                image_bytes = _generate_image(
+                    endpoint=endpoint,
+                    token=token,
+                    prompt=prompt,
+                    mother_bytes=mother_bytes,
+                    mamush_bytes=mamush_bytes,
+                    width=width,
+                    height=height,
+                    guidance=guidance,
                 )
 
-            _save_storyboard(storyboard_path, storyboard)
+                _normalize_image(
+                    image_bytes,
+                    output_path,
+                    width,
+                    height,
+                )
 
-            latency_ms = round(
-                (time.perf_counter() - started) * 1000, 2
-            )
+                if output_format == "horizontal":
+                    shot["keyframe"]["image_path"] = str(
+                        output_path.as_posix()
+                    )
+                    shot["keyframe"]["cache_key"] = key
+                    shot["stage_status"]["keyframe"] = "completed"
 
-            _append_run_record(
-                config.paths.runs_log_path,
-                {
-                    "timestamp_utc": timestamp,
-                    "stage": STAGE_NAME,
-                    "operation": "cloudflare_image",
-                    "status": "success",
+                else:
+                    shot["keyframe"]["vertical_image_path"] = str(
+                        output_path.as_posix()
+                    )
+                    shot["keyframe"]["vertical_cache_key"] = key
+                    shot["stage_status"]["keyframe_vertical"] = (
+                        "completed"
+                    )
+
+                record = {
+                    "shot_id": shot_id,
+                    "format": output_format,
                     "model": model,
-                    "parameters": parameters,
-                    "seed": storyboard_seed,
-                    "latency_ms": latency_ms,
-                    "usage": None,
-                    "cost_usd": None,
-                    "notes": (
-                        "Generated image normalized to "
-                        f"{width}x{height}. "
-                        "FLUX Schnell seed parameter is unsupported."
+                    "output": str(output_path),
+                    "width": width,
+                    "height": height,
+                    "cache_key": key,
+                    "mother_reference_sha256": mother_hash,
+                    "mamush_reference_sha256": mamush_hash,
+                    "duration_seconds": round(
+                        time.time() - started, 2
                     ),
-                },
-            )
+                    "status": "completed",
+                    "timestamp": datetime.now(
+                        timezone.utc
+                    ).isoformat(),
+                }
 
-            logger.info(
-                "%s generated successfully: %s (%d ms)",
-                shot_id,
-                relative_output_path,
-                latency_ms,
-            )
+                _append_run_record(log_path, record)
+                _save_storyboard(storyboard_path, storyboard)
 
-        except Exception as exc:
-            shot["stage_status"]["keyframe"] = "failed"
-            _save_storyboard(storyboard_path, storyboard)
+                results["generated"].append(
+                    f"{shot_id}:{output_format}"
+                )
 
-            _append_run_record(
-                config.paths.runs_log_path,
-                {
-                    "timestamp_utc": timestamp,
-                    "stage": STAGE_NAME,
-                    "operation": "cloudflare_image",
-                    "status": "error",
-                    "model": model,
-                    "parameters": parameters,
-                    "seed": storyboard_seed,
-                    "latency_ms": round(
-                        (time.perf_counter() - started) * 1000, 2
-                    ),
-                    "usage": None,
-                    "cost_usd": None,
-                    "notes": str(exc)[:1000],
-                },
-            )
+                logger.info(
+                    "Saved %s keyframe: %s",
+                    output_format,
+                    output_path,
+                )
 
-            logger.exception("Keyframe generation failed for %s", shot_id)
-            raise
+            except Exception as exc:
+                logger.exception(
+                    "Failed to generate %s keyframe for %s",
+                    output_format,
+                    shot_id,
+                )
 
-    logger.info("Keyframe stage finished.")
+                status_key = (
+                    "keyframe"
+                    if output_format == "horizontal"
+                    else "keyframe_vertical"
+                )
+
+                shot["stage_status"][status_key] = "failed"
+
+                record = {
+                    "shot_id": shot_id,
+                    "format": output_format,
+                    "status": "failed",
+                    "error": str(exc),
+                    "timestamp": datetime.now(
+                        timezone.utc
+                    ).isoformat(),
+                }
+
+                _append_run_record(log_path, record)
+                _save_storyboard(storyboard_path, storyboard)
+
+                results["failed"].append(
+                    {
+                        "shot_id": shot_id,
+                        "format": output_format,
+                        "error": str(exc),
+                    }
+                )
+
+    logger.info(
+        "Keyframe stage finished: %s generated, %s skipped, %s failed",
+        len(results["generated"]),
+        len(results["skipped"]),
+        len(results["failed"]),
+    )
+
+    return results

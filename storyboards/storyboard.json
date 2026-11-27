@@ -112,8 +112,9 @@
       "transition_out": "crossfade",
       "stage_status": {
         "narration": "generated",
-        "keyframe": "generated",
-        "video": "generated"
+        "keyframe": "failed",
+        "video": "generated",
+        "keyframe_vertical": "failed"
       }
     },
     {
