@@ -4,7 +4,7 @@
   "project": {
     "title": "ማሙሽ - የእናት ፍቅር",
     "english_title": "Mamush - A Mother's Love",
-    "logline": "In the mist-covered Ethiopian highlands, a devoted rural mother named Mamush sacrifices her comfort and guides her young son across rain-swollen trails so he can reach his schoolhouse—and as he grows older, her love remains the strength that helps him overcome every obstacle.",
+    "logline": "In the mist-covered Ethiopian highlands, a devoted rural mother sacrifices her comfort and guides her young son across rain-swollen trails so he can reach his schoolhouse—and as he grows older, her love remains the strength that helps him overcome every obstacle.",
     "language": "am",
     "target_duration_sec": {
       "min": 60,
@@ -21,14 +21,14 @@
     {
       "id": "mamush",
       "name": "Mamush (ማሙሽ)",
-      "role": "Rural Ethiopian mother",
-      "visual_bible": "Ethiopian woman in her mid-30s with warm dark brown skin, braided hair partially covered by a traditional white handwoven cotton netela shawl with subtle woven border, earthy woven dress, weathered gentle hands, resilient and loving expression."
+      "role": "Young Ethiopian schoolboy",
+      "visual_bible": "Mamush is the young Ethiopian schoolboy. His face, facial structure, skin tone, hairstyle and overall appearance must consistently match the official boy reference image mamush_reference.png. Preserve his short dark hair, blue shirt and colorful beaded necklace. He is the son of Mother. Do not change his identity or clothing between scenes."
     },
     {
-      "id": "son",
-      "name": "Dawit (ዳዊት)",
-      "role": "Young schoolboy, Mamush's son",
-      "visual_bible": "Eight-year-old rural Ethiopian boy with short curly hair, faded navy knit sweater over a cotton shirt, dusty khaki shorts, worn rubber sandals, carrying a cloth-wrapped notebook and small canvas satchel."
+      "id": "mother",
+      "name": "Mother (እናት)",
+      "role": "Mamush's mother",
+      "visual_bible": "Mother is Mamush's Ethiopian mother, a woman in her mid-30s. Her face, facial structure, skin tone, hairstyle and overall appearance must consistently match the official mother reference image mother_reference.png. Preserve her traditional mustard-yellow patterned Habesha-style dress and traditional headscarf. She has a warm, resilient and loving expression. Do not change her identity or clothing between scenes."
     }
   ],
   "style_guide": {
@@ -88,13 +88,13 @@
       },
       "narration": {
         "language": "am",
-        "text_am": "በኢትዮጵያ ደጋማ አካባቢዎች ጎህ ሲቀድ፣ ማሙሽ የምትባል እናት በትንሽ ጎጆዋ ውስጥ ከሌሎች ቀድማ ከእንቅልፏ ትነሳለች።",
-        "text_en": "As dawn breaks across the Ethiopian highlands, a mother named Mamush wakes in her small homestead before anyone else.",
+        "text_am": "በኢትዮጵያ ደጋማ አካባቢዎች ጎህ ሲቀድ፣ እናት በትንሽ ጎጆዋ ውስጥ ከሌሎች ቀድማ ከእንቅልፏ ትነሳለች።",
+        "text_en": "As dawn breaks across the Ethiopian highlands, Mother wakes in her small homestead before anyone else.",
         "emotion": "warm_reflective",
         "start_sec": 0.0,
         "end_sec": 9.37,
         "audio_path": "assets/audio/shot_01_narration.wav",
-        "cache_key": "272c5b135629a72d924f0b1e03a3be8cef1228e6ca601d9aa721fdcea5fb86b2"
+        "cache_key": "ccd739771ac48cd3cb03843d4ed2c15ccfb2600ef7a4f09f95c9cb5dda006068"
       },
       "keyframe": {
         "prompt": "[PLACEHOLDER] Cinematic extreme wide shot of rural Ethiopian highlands at dawn, mist drifting across green terraced hills, traditional round mud-and-thatch gojo home with thin morning hearth smoke rising, golden sunrise light, 35mm film grain.",
@@ -109,14 +109,18 @@
         "motion_prompt": "[PLACEHOLDER] Gentle morning mist drifts across the valley while thin woodsmoke rises slowly from the homestead roof as camera pans slowly right.",
         "fps": 24,
         "clip_path": "assets/videos/shot_01.mp4",
-        "cache_key": "ed84fe28f3121c9fead3ebff7a40957a03a44891175c6e0592092505b7d3372f"
+        "cache_key": "ed84fe28f3121c9fead3ebff7a40957a03a44891175c6e0592092505b7d3372f",
+        "vertical_clip_path": "assets/videos_vertical/shot_01.mp4",
+        "vertical_cache_key": "07427ee43177d86a818170b02428b23d4e5073c6142fbabb3bf690753526d0c2",
+        "vertical_fps": 24
       },
       "transition_out": "crossfade",
       "stage_status": {
         "narration": "generated",
         "keyframe": "completed",
         "video": "generated",
-        "keyframe_vertical": "completed"
+        "keyframe_vertical": "completed",
+        "video_vertical": "generated"
       }
     },
     {
@@ -126,8 +130,8 @@
       "scene_title": "Preparing the Notebook",
       "duration_sec": 8.0,
       "character_ids": [
-        "mamush",
-        "son"
+        "mother",
+        "mamush"
       ],
       "setting": "Warm, dimly lit interior of the traditional mud-brick home illuminated by doorway sunlight and ember glow.",
       "time_of_day": "morning",
@@ -147,7 +151,7 @@
         "cache_key": "0b0ad2162ed432b2117c0b8e41aa797e77c0cee404e2f698006c6f31067bb824"
       },
       "keyframe": {
-        "prompt": "[PLACEHOLDER] Medium close-up inside a rustic Ethiopian rural home, warm sunbeam cutting through doorway dust, Ethiopian mother Mamush in white cotton netela wrapping a worn school notebook in protective cloth for her smiling eight-year-old son.",
+        "prompt": "[PLACEHOLDER] Medium close-up inside a rustic Ethiopian rural home, warm sunbeam cutting through doorway dust, Mother wearing her mustard-yellow patterned traditional dress and headscarf carefully wrapping a worn school notebook in protective cloth for her smiling young son Mamush, an Ethiopian boy with short dark hair, blue shirt and colorful beaded necklace.",
         "negative_prompt": "modern kitchen, fluorescent lighting, plastic furniture, watermark",
         "seed": 1002,
         "image_path": "E:/Dev/mamush-ai-film/assets/keyframes/shot_02.png",
@@ -159,14 +163,18 @@
         "motion_prompt": "[PLACEHOLDER] Mamush ties the cloth gently around the notebook and hands the satchel to her son as dust motes float in the morning sunbeam, subtle camera push-in.",
         "fps": 24,
         "clip_path": "assets/videos/shot_02.mp4",
-        "cache_key": "f2df84f5d554d1a11cc94052fc08b7c50660358f64b7730c577107a5a37f58c2"
+        "cache_key": "f2df84f5d554d1a11cc94052fc08b7c50660358f64b7730c577107a5a37f58c2",
+        "vertical_clip_path": "assets/videos_vertical/shot_02.mp4",
+        "vertical_cache_key": "8f9350a493fb3c4bebeaeb51b9ad487931c30ce134cd7723003df1491568b4b4",
+        "vertical_fps": 24
       },
       "transition_out": "cut",
       "stage_status": {
         "narration": "generated",
         "keyframe": "completed",
         "video": "cached",
-        "keyframe_vertical": "completed"
+        "keyframe_vertical": "completed",
+        "video_vertical": "generated"
       }
     },
     {
@@ -176,8 +184,8 @@
       "scene_title": "Stepping Onto the Red Earth Trail",
       "duration_sec": 8.0,
       "character_ids": [
-        "mamush",
-        "son"
+        "mother",
+        "mamush"
       ],
       "setting": "Winding red-clay footpath flanked by wild grass and flat-topped acacia trees.",
       "time_of_day": "morning",
@@ -197,7 +205,7 @@
         "cache_key": "59d51294cef1910e9e66d95cd4d8fad49867a6fbbb1c99139cfec0777aa2ff70"
       },
       "keyframe": {
-        "prompt": "[PLACEHOLDER] Medium wide shot of Ethiopian mother Mamush walking hand in hand with her young son along a red-earth countryside footpath, green highland meadows and acacia trees, gathering distant rain clouds on the horizon.",
+        "prompt": "[PLACEHOLDER] Medium wide shot of Mother walking hand in hand with her young son Mamush along a red-earth countryside footpath. Mamush is a young Ethiopian boy with short dark hair, blue shirt and colorful beaded necklace. Mother wears her mustard-yellow patterned traditional dress and headscarf. Green highland meadows and acacia trees, gathering distant rain clouds.",
         "negative_prompt": "cars, paved sidewalk, modern backpacks, watermark",
         "seed": 1003,
         "image_path": "E:/Dev/mamush-ai-film/assets/keyframes/shot_03.png",
@@ -209,14 +217,18 @@
         "motion_prompt": "[PLACEHOLDER] Mother and son walk forward along the winding dirt path while morning breeze ripples through tall grass, smooth tracking follow shot.",
         "fps": 24,
         "clip_path": "assets/videos/shot_03.mp4",
-        "cache_key": "29fc0fd1307fb61f601266261c3147c62f21e63484b143fbb3d6ab11751855a7"
+        "cache_key": "29fc0fd1307fb61f601266261c3147c62f21e63484b143fbb3d6ab11751855a7",
+        "vertical_clip_path": "assets/videos_vertical/shot_03.mp4",
+        "vertical_cache_key": "7e27cd4b4a9aa1c5da1d1590a649168b3a216eb8e3675832c0ce0cda4354932d",
+        "vertical_fps": 24
       },
       "transition_out": "crossfade",
       "stage_status": {
         "narration": "generated",
         "keyframe": "completed",
         "video": "cached",
-        "keyframe_vertical": "completed"
+        "keyframe_vertical": "completed",
+        "video_vertical": "generated"
       }
     },
     {
@@ -226,8 +238,8 @@
       "scene_title": "Sudden Downpour and Broken Sandal",
       "duration_sec": 12.0,
       "character_ids": [
-        "mamush",
-        "son"
+        "mother",
+        "mamush"
       ],
       "setting": "Steep muddy hillside path beside a swollen seasonal stream under heavy rain.",
       "time_of_day": "midday",
@@ -247,7 +259,7 @@
         "cache_key": "6de42ec11de2c3aa3fa7325e0798b10124e73f1904c2d4ca5637e99399171c7f"
       },
       "keyframe": {
-        "prompt": "[PLACEHOLDER] Dramatic cinematic medium shot in heavy Ethiopian highland rain, mud-splattered trail beside a rushing brown seasonal creek, young boy sitting on a wet stone looking down at a snapped rubber sandal while Mamush shields him.",
+        "prompt": "[PLACEHOLDER] Dramatic cinematic medium shot in heavy Ethiopian highland rain, mud-splattered trail beside a rushing brown seasonal creek. Young boy Mamush, wearing his blue shirt and colorful beaded necklace, sits on a wet stone looking down at his snapped rubber sandal while Mother shields him from the rain.",
         "negative_prompt": "umbrellas, raincoats, dry pavement, studio lighting, watermark",
         "seed": 1004,
         "image_path": "E:/Dev/mamush-ai-film/assets/keyframes/shot_04.png",
@@ -259,14 +271,18 @@
         "motion_prompt": "[PLACEHOLDER] Raindrops splash onto the muddy path and swollen stream while Mamush kneels urgently beside her shivering son, gentle handheld motion.",
         "fps": 24,
         "clip_path": "assets/videos/shot_04.mp4",
-        "cache_key": "3ca7ebe72404e9a68a30269dcbb0156c7a5567a3d65cfd485e5a0f33bc78cc2f"
+        "cache_key": "3ca7ebe72404e9a68a30269dcbb0156c7a5567a3d65cfd485e5a0f33bc78cc2f",
+        "vertical_clip_path": "assets/videos_vertical/shot_04.mp4",
+        "vertical_cache_key": "3d50b5425ea959ff053d0716332fc26a96e8fbe539124a83ec863fc527162bb3",
+        "vertical_fps": 24
       },
       "transition_out": "cut",
       "stage_status": {
         "narration": "generated",
         "keyframe": "completed",
         "video": "cached",
-        "keyframe_vertical": "completed"
+        "keyframe_vertical": "completed",
+        "video_vertical": "generated"
       }
     },
     {
@@ -276,8 +292,8 @@
       "scene_title": "A Mother's Shawl and Crossing the Stream",
       "duration_sec": 10.0,
       "character_ids": [
-        "mamush",
-        "son"
+        "mother",
+        "mamush"
       ],
       "setting": "Shallow rocky crossing of the rain-swollen rural stream.",
       "time_of_day": "midday",
@@ -297,7 +313,7 @@
         "cache_key": "cb57daca3adafc9fe637cae20390302f849306ac859a26d23d6f51969a587d4b"
       },
       "keyframe": {
-        "prompt": "[PLACEHOLDER] Emotional medium wide shot of determined Ethiopian mother Mamush wading barefoot across stepping stones in a shallow muddy stream, carrying her young son on her back with his notebook satchel wrapped safely in her white shawl.",
+        "prompt": "[PLACEHOLDER] Emotional medium wide shot of determined Mother wading barefoot across stepping stones in a shallow muddy stream, carrying her young son Mamush on her back. Mamush wears his blue shirt and colorful beaded necklace. His notebook satchel is wrapped safely in Mother's traditional patterned shawl. Mother wears her mustard-yellow patterned traditional clothing.",
         "negative_prompt": "bridges, modern boots, smiling posed look, watermark",
         "seed": 1005,
         "image_path": "E:/Dev/mamush-ai-film/assets/keyframes/shot_05.png",
@@ -309,14 +325,18 @@
         "motion_prompt": "[PLACEHOLDER] Mamush steps steadily from stone to stone through swirling shallow water carrying her son securely while rain eases around them.",
         "fps": 24,
         "clip_path": "assets/videos/shot_05.mp4",
-        "cache_key": "b4bb9ac482bda0ed21b5211cca5916e2a12117cd33b82ea7eb1cd520ca54d37f"
+        "cache_key": "b4bb9ac482bda0ed21b5211cca5916e2a12117cd33b82ea7eb1cd520ca54d37f",
+        "vertical_clip_path": "assets/videos_vertical/shot_05.mp4",
+        "vertical_cache_key": "4206f08094dab81ca2751d28ca986bb30c885325dca954734ade035fd73c99bf",
+        "vertical_fps": 24
       },
       "transition_out": "crossfade",
       "stage_status": {
         "narration": "generated",
         "keyframe": "completed",
         "video": "cached",
-        "keyframe_vertical": "completed"
+        "keyframe_vertical": "completed",
+        "video_vertical": "generated"
       }
     },
     {
@@ -326,8 +346,8 @@
       "scene_title": "Clearing Skies and Courage",
       "duration_sec": 11.0,
       "character_ids": [
-        "mamush",
-        "son"
+        "mother",
+        "mamush"
       ],
       "setting": "Dry ridge overlooking a sunlit valley with a small rural school visible in the distance.",
       "time_of_day": "afternoon",
@@ -347,7 +367,7 @@
         "cache_key": "b0c67b729558b653e4fde53fd0d0a2b200523245f8751f5d6c349ad68b8b050f"
       },
       "keyframe": {
-        "prompt": "[PLACEHOLDER] Over-the-shoulder cinematic shot from behind Mamush kneeling to tie a cloth strip around her son's sandal, sunlit green Ethiopian valley ahead with a modest tin-roofed rural schoolhouse perched on the ridge.",
+        "prompt": "[PLACEHOLDER] Over-the-shoulder cinematic shot from behind Mother as she kneels to tie a cloth strip around her son Mamush's sandal. Mamush is a young Ethiopian boy with short dark hair and a blue shirt. Sunlit green Ethiopian valley ahead with a modest tin-roofed rural schoolhouse perched on the ridge.",
         "negative_prompt": "city skyline, paved highway, overcast gloom, watermark",
         "seed": 1006,
         "image_path": "E:/Dev/mamush-ai-film/assets/keyframes/shot_06.png",
@@ -359,14 +379,18 @@
         "motion_prompt": "[PLACEHOLDER] Mamush finishes fastening the sandal, places a reassuring hand on her son's shoulder, and camera tilts up as golden sunlight breaks over the distant schoolhouse.",
         "fps": 24,
         "clip_path": "assets/videos/shot_06.mp4",
-        "cache_key": "3a9887d769488313303a8d4ab9d6cdaea828646d3b6b4af5b2ea093f75036627"
+        "cache_key": "3a9887d769488313303a8d4ab9d6cdaea828646d3b6b4af5b2ea093f75036627",
+        "vertical_clip_path": "assets/videos_vertical/shot_06.mp4",
+        "vertical_cache_key": "dbd3a784009783261aa9e4a520055dbe7a3b254fff93106220d222d79a628d77",
+        "vertical_fps": 24
       },
       "transition_out": "crossfade",
       "stage_status": {
         "narration": "generated",
         "keyframe": "completed",
         "video": "cached",
-        "keyframe_vertical": "completed"
+        "keyframe_vertical": "completed",
+        "video_vertical": "generated"
       }
     },
     {
@@ -376,8 +400,8 @@
       "scene_title": "Reaching the Schoolyard",
       "duration_sec": 12.0,
       "character_ids": [
-        "son",
-        "mamush"
+        "mamush",
+        "mother"
       ],
       "setting": "Open dirt courtyard of a rural highland primary school with children gathering under an acacia tree.",
       "time_of_day": "golden_hour",
@@ -397,7 +421,7 @@
         "cache_key": "759600516ded0f7064f520dd0e07ba4522a1d5ab3d4b37738b240e6e96b52746"
       },
       "keyframe": {
-        "prompt": "[PLACEHOLDER] Warm golden-hour wide shot of young Ethiopian schoolboy running happily with his cloth-wrapped notebook into a sunlit rural school courtyard where other village children gather, Mamush watching from the hill path in the foreground edge.",
+        "prompt": "[PLACEHOLDER] Warm golden-hour wide shot of young Ethiopian schoolboy Mamush running happily with his cloth-wrapped notebook into a sunlit rural school courtyard where other village children gather. Mamush has short dark hair, a blue shirt and colorful beaded necklace. Mother, wearing her mustard-yellow patterned traditional dress and headscarf, watches proudly from the hill path in the foreground.",
         "negative_prompt": "brick university buildings, school buses, concrete fence, watermark",
         "seed": 1007,
         "image_path": "E:/Dev/mamush-ai-film/assets/keyframes/shot_07.png",
@@ -409,14 +433,18 @@
         "motion_prompt": "[PLACEHOLDER] The boy sprints joyfully across the sunlit courtyard to join his classmates while warm golden light illuminates the dust behind his feet.",
         "fps": 24,
         "clip_path": "assets/videos/shot_07.mp4",
-        "cache_key": "0e7e68a80a5c17e817548d571dce66d24f9b1e31e7ece266af60abede1ffd5ca"
+        "cache_key": "0e7e68a80a5c17e817548d571dce66d24f9b1e31e7ece266af60abede1ffd5ca",
+        "vertical_clip_path": "assets/videos_vertical/shot_07.mp4",
+        "vertical_cache_key": "71ce6465458be94151f65ef800279f6e38b6d4a0e9270c34ac52f807aef5aac8",
+        "vertical_fps": 24
       },
       "transition_out": "crossfade",
       "stage_status": {
         "narration": "generated",
         "keyframe": "completed",
         "video": "cached",
-        "keyframe_vertical": "completed"
+        "keyframe_vertical": "completed",
+        "video_vertical": "generated"
       }
     },
     {
@@ -426,7 +454,7 @@
       "scene_title": "A Mother's Quiet Pride",
       "duration_sec": 10.0,
       "character_ids": [
-        "mamush"
+        "mother"
       ],
       "setting": "Sunlit ridge path overlooking the schoolyard below.",
       "time_of_day": "golden_hour",
@@ -446,7 +474,7 @@
         "cache_key": "59de4740a0ce5d9a7b8a044f9cf4a53e71e2ea234d6feddff6bd6eaa049303b1"
       },
       "keyframe": {
-        "prompt": "[PLACEHOLDER] Intimate 85mm close-up portrait of Mamush standing on the hillside in warm golden-hour sunlight, muddy hem and gentle smile with glistening proud eyes watching her son in the distance, soft cinematic bokeh.",
+        "prompt": "[PLACEHOLDER] Intimate 85mm close-up portrait of Mother, Mamush's Ethiopian mother, standing on the hillside in warm golden-hour sunlight. She wears her mustard-yellow patterned traditional dress and headscarf. Her expression is a gentle, proud smile with glistening eyes as she watches her son Mamush in the distance. Soft cinematic bokeh.",
         "negative_prompt": "heavy makeup, studio backdrop, harsh flash, watermark",
         "seed": 1008,
         "image_path": "E:/Dev/mamush-ai-film/assets/keyframes/shot_08.png",
@@ -458,14 +486,18 @@
         "motion_prompt": "[PLACEHOLDER] Mamush exhales softly with a proud, tearful smile as warm wind moves loose strands of hair and golden light wraps the hillside during a gentle camera pull-back.",
         "fps": 24,
         "clip_path": "assets/videos/shot_08.mp4",
-        "cache_key": "70fe918c8209ff6aaa7d922373abfcc92cddb0761d8875424595cc2f2e2b9086"
+        "cache_key": "70fe918c8209ff6aaa7d922373abfcc92cddb0761d8875424595cc2f2e2b9086",
+        "vertical_clip_path": "assets/videos_vertical/shot_08.mp4",
+        "vertical_cache_key": "8db3ec503bea38c460b7a94e662c629155a7319ba64b79f81cc4ede266915840",
+        "vertical_fps": 24
       },
       "transition_out": "fade_black",
       "stage_status": {
         "narration": "generated",
         "keyframe": "completed",
         "video": "cached",
-        "keyframe_vertical": "completed"
+        "keyframe_vertical": "completed",
+        "video_vertical": "generated"
       }
     }
   ],
@@ -479,6 +511,8 @@
       "music_gain_db": -12.0,
       "music_ducking_db": -8.0
     },
-    "subtitles_enabled": true
+    "subtitles_enabled": true,
+    "vertical_stage_status": "generated",
+    "vertical_output_path": "assets/output/mamush_final_9x16.mp4"
   }
 }

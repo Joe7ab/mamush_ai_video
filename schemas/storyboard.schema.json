@@ -56,7 +56,10 @@
         "target_duration_sec": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["min", "max"],
+          "required": [
+            "min",
+            "max"
+          ],
           "properties": {
             "min": {
               "type": "number",
@@ -72,12 +75,20 @@
         },
         "aspect_ratio": {
           "type": "string",
-          "enum": ["16:9", "9:16", "2.39:1", "4:3"]
+          "enum": [
+            "16:9",
+            "9:16",
+            "2.39:1",
+            "4:3"
+          ]
         },
         "resolution": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["width", "height"],
+          "required": [
+            "width",
+            "height"
+          ],
           "properties": {
             "width": {
               "type": "integer",
@@ -93,7 +104,11 @@
         },
         "fps": {
           "type": "integer",
-          "enum": [24, 25, 30]
+          "enum": [
+            24,
+            25,
+            30
+          ]
         }
       }
     },
@@ -103,7 +118,12 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["id", "name", "role", "visual_bible"],
+        "required": [
+          "id",
+          "name",
+          "role",
+          "visual_bible"
+        ],
         "properties": {
           "id": {
             "type": "string",
@@ -177,7 +197,13 @@
       "properties": {
         "stage_status": {
           "type": "string",
-          "enum": ["pending", "cached", "generated", "approved", "failed"]
+          "enum": [
+            "pending",
+            "cached",
+            "generated",
+            "approved",
+            "failed"
+          ]
         },
         "prompt": {
           "type": "string",
@@ -202,7 +228,10 @@
           "items": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["time_sec", "mood"],
+            "required": [
+              "time_sec",
+              "mood"
+            ],
             "properties": {
               "time_sec": {
                 "type": "number",
@@ -216,10 +245,16 @@
           }
         },
         "output_path": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "cache_key": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         }
       }
     },
@@ -256,7 +291,12 @@
           },
           "act": {
             "type": "string",
-            "enum": ["setup", "obstacle", "support", "resolution"]
+            "enum": [
+              "setup",
+              "obstacle",
+              "support",
+              "resolution"
+            ]
           },
           "scene_title": {
             "type": "string",
@@ -293,7 +333,11 @@
           "camera": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["shot_type", "movement", "lens_mm"],
+            "required": [
+              "shot_type",
+              "movement",
+              "lens_mm"
+            ],
             "properties": {
               "shot_type": {
                 "type": "string",
@@ -368,10 +412,16 @@
                 "exclusiveMinimum": 0
               },
               "audio_path": {
-                "type": ["string", "null"]
+                "type": [
+                  "string",
+                  "null"
+                ]
               },
               "cache_key": {
-                "type": ["string", "null"]
+                "type": [
+                  "string",
+                  "null"
+                ]
               }
             }
           },
@@ -394,21 +444,47 @@
                 "type": "string"
               },
               "seed": {
-                "type": ["integer", "null"],
+                "type": [
+                  "integer",
+                  "null"
+                ],
                 "minimum": 0
               },
               "image_path": {
-                "type": ["string", "null"]
+                "type": [
+                  "string",
+                  "null"
+                ]
               },
               "cache_key": {
-                "type": ["string", "null"]
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "vertical_image_path": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "vertical_cache_key": {
+                "type": [
+                  "string",
+                  "null"
+                ]
               }
             }
           },
           "video": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["motion_prompt", "fps", "clip_path", "cache_key"],
+            "required": [
+              "motion_prompt",
+              "fps",
+              "clip_path",
+              "cache_key"
+            ],
             "properties": {
               "motion_prompt": {
                 "type": "string",
@@ -416,36 +492,109 @@
               },
               "fps": {
                 "type": "integer",
-                "enum": [24, 25, 30]
+                "enum": [
+                  24,
+                  25,
+                  30
+                ]
               },
               "clip_path": {
-                "type": ["string", "null"]
+                "type": [
+                  "string",
+                  "null"
+                ]
               },
               "cache_key": {
-                "type": ["string", "null"]
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "vertical_clip_path": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "vertical_cache_key": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "vertical_fps": {
+                "type": "integer",
+                "enum": [
+                  24,
+                  25,
+                  30
+                ]
               }
             }
           },
           "transition_out": {
             "type": "string",
-            "enum": ["cut", "crossfade", "fade_black"]
+            "enum": [
+              "cut",
+              "crossfade",
+              "fade_black"
+            ]
           },
           "stage_status": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["narration", "keyframe", "video"],
+            "required": [
+              "narration",
+              "keyframe",
+              "video"
+            ],
             "properties": {
               "narration": {
                 "type": "string",
-                "enum": ["pending", "cached", "generated", "failed"]
+                "enum": [
+                  "pending",
+                  "cached",
+                  "generated",
+                  "failed"
+                ]
               },
               "keyframe": {
                 "type": "string",
-                "enum": ["pending", "cached", "generated", "failed"]
+                "enum": [
+                  "pending",
+                  "cached",
+                  "generated",
+                  "failed",
+                  "completed"
+                ]
               },
               "video": {
                 "type": "string",
-                "enum": ["pending", "cached", "generated", "failed"]
+                "enum": [
+                  "pending",
+                  "cached",
+                  "generated",
+                  "failed"
+                ]
+              },
+              "keyframe_vertical": {
+                "type": "string",
+                "enum": [
+                  "pending",
+                  "cached",
+                  "generated",
+                  "completed",
+                  "failed"
+                ]
+              },
+              "video_vertical": {
+                "type": "string",
+                "enum": [
+                  "pending",
+                  "cached",
+                  "generated",
+                  "failed"
+                ]
               }
             }
           }
@@ -466,21 +615,39 @@
       "properties": {
         "stage_status": {
           "type": "string",
-          "enum": ["pending", "assembled", "failed"]
+          "enum": [
+            "pending",
+            "assembled",
+            "failed",
+            "generated"
+          ]
         },
         "output_path": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "subtitle_path": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "narration_script_path": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "audio_mix": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["narration_gain_db", "music_gain_db", "music_ducking_db"],
+          "required": [
+            "narration_gain_db",
+            "music_gain_db",
+            "music_ducking_db"
+          ],
           "properties": {
             "narration_gain_db": {
               "type": "number",
@@ -501,6 +668,21 @@
         },
         "subtitles_enabled": {
           "type": "boolean"
+        },
+        "vertical_stage_status": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "assembled",
+            "generated",
+            "failed"
+          ]
+        },
+        "vertical_output_path": {
+          "type": [
+            "string",
+            "null"
+          ]
         }
       }
     }
