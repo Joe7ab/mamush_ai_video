@@ -52,8 +52,14 @@ class ProjectPaths:
     storyboard_path: Path
     schema_path: Path
     assets_dir: Path
+    references_dir: Path
+    character_references_dir: Path
+    mother_reference_path: Path
+    mamush_reference_path: Path
     keyframes_dir: Path
+    keyframes_vertical_dir: Path
     videos_dir: Path
+    videos_vertical_dir: Path
     audio_dir: Path
     music_dir: Path
     output_dir: Path
@@ -71,8 +77,18 @@ class ProjectPaths:
             storyboard_path=root_dir / "storyboards" / "storyboard.json",
             schema_path=root_dir / "schemas" / "storyboard.schema.json",
             assets_dir=assets_dir,
+            references_dir=assets_dir / "references",
+            character_references_dir=assets_dir / "references" / "characters",
+            mother_reference_path=(
+                assets_dir / "references" / "characters" / "mother_reference.png"
+            ),
+            mamush_reference_path=(
+                assets_dir / "references" / "characters" / "mamush_reference.png"
+            ),
             keyframes_dir=assets_dir / "keyframes",
+            keyframes_vertical_dir=assets_dir / "keyframes_vertical",
             videos_dir=assets_dir / "videos",
+            videos_vertical_dir=assets_dir / "videos_vertical",
             audio_dir=assets_dir / "audio",
             music_dir=assets_dir / "music",
             output_dir=output_dir,
@@ -85,8 +101,12 @@ class ProjectPaths:
     def ensure_directories(self) -> None:
         """Create workspace output/cache/log directories if they do not exist."""
         for directory in (
+            self.references_dir,
+            self.character_references_dir,
             self.keyframes_dir,
+            self.keyframes_vertical_dir,
             self.videos_dir,
+            self.videos_vertical_dir,
             self.audio_dir,
             self.music_dir,
             self.output_dir,
@@ -109,6 +129,9 @@ class FilmSpec:
     width: int = 1920
     height: int = 1080
     aspect_ratio: str = "16:9"
+    vertical_width: int = 1080
+    vertical_height: int = 1920
+    vertical_aspect_ratio: str = "9:16"
     narration_language: str = "am"
 
 
@@ -131,7 +154,8 @@ class CloudflareConfig:
 
     account_id: str | None = field(default=None, repr=False)
     api_token: str | None = field(default=None, repr=False)
-    image_model: str = "@cf/black-forest-labs/flux-1-schnell"
+    image_model: str = "@cf/black-forest-labs/flux-2-klein-9b"
+    guidance: float = 4.0
     timeout_sec: int = 90
 
     @property
@@ -266,8 +290,11 @@ def load_config(
             api_token=os.getenv("CLOUDFLARE_API_TOKEN") or None,
             image_model=os.getenv(
                 "CLOUDFLARE_IMAGE_MODEL",
-                "@cf/black-forest-labs/flux-1-schnell",
+                "@cf/black-forest-labs/flux-2-klein-9b",
             ).strip(),
+            guidance=_parse_float(
+                os.getenv("CLOUDFLARE_IMAGE_GUIDANCE"), 4.0
+            ),
             timeout_sec=_parse_int(os.getenv("CLOUDFLARE_TIMEOUT_SEC"), 90),
         ),
         wan=WanConfig(
