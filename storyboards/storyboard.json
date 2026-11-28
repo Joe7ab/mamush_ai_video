@@ -112,12 +112,14 @@
         "cache_key": "ed84fe28f3121c9fead3ebff7a40957a03a44891175c6e0592092505b7d3372f",
         "vertical_clip_path": "assets/videos_vertical/shot_01.mp4",
         "vertical_cache_key": "07427ee43177d86a818170b02428b23d4e5073c6142fbabb3bf690753526d0c2",
-        "vertical_fps": 24
+        "vertical_fps": 24,
+        "horizontal_cache_key": "2f9b83ffcc8b141b8e78f7b04b21c5224e664f37a9f69fb18233d55b2813175f",
+        "horizontal_fps": 24
       },
       "transition_out": "crossfade",
       "stage_status": {
         "narration": "generated",
-        "keyframe": "completed",
+        "keyframe": "failed",
         "video": "generated",
         "keyframe_vertical": "completed",
         "video_vertical": "generated"
@@ -166,13 +168,15 @@
         "cache_key": "f2df84f5d554d1a11cc94052fc08b7c50660358f64b7730c577107a5a37f58c2",
         "vertical_clip_path": "assets/videos_vertical/shot_02.mp4",
         "vertical_cache_key": "8f9350a493fb3c4bebeaeb51b9ad487931c30ce134cd7723003df1491568b4b4",
-        "vertical_fps": 24
+        "vertical_fps": 24,
+        "horizontal_cache_key": "278846abb69bfeb7d664122c22d0f5b9e05b61e2e758d442a4eb3d92703fcc7f",
+        "horizontal_fps": 24
       },
       "transition_out": "cut",
       "stage_status": {
         "narration": "generated",
-        "keyframe": "completed",
-        "video": "cached",
+        "keyframe": "failed",
+        "video": "generated",
         "keyframe_vertical": "completed",
         "video_vertical": "generated"
       }
@@ -220,13 +224,15 @@
         "cache_key": "29fc0fd1307fb61f601266261c3147c62f21e63484b143fbb3d6ab11751855a7",
         "vertical_clip_path": "assets/videos_vertical/shot_03.mp4",
         "vertical_cache_key": "7e27cd4b4a9aa1c5da1d1590a649168b3a216eb8e3675832c0ce0cda4354932d",
-        "vertical_fps": 24
+        "vertical_fps": 24,
+        "horizontal_cache_key": "c917632d24118385d388ab48df099ad4d657496343e35e811dd9a1f4da57e4a9",
+        "horizontal_fps": 24
       },
       "transition_out": "crossfade",
       "stage_status": {
         "narration": "generated",
-        "keyframe": "completed",
-        "video": "cached",
+        "keyframe": "failed",
+        "video": "generated",
         "keyframe_vertical": "completed",
         "video_vertical": "generated"
       }
@@ -274,13 +280,15 @@
         "cache_key": "3ca7ebe72404e9a68a30269dcbb0156c7a5567a3d65cfd485e5a0f33bc78cc2f",
         "vertical_clip_path": "assets/videos_vertical/shot_04.mp4",
         "vertical_cache_key": "3d50b5425ea959ff053d0716332fc26a96e8fbe539124a83ec863fc527162bb3",
-        "vertical_fps": 24
+        "vertical_fps": 24,
+        "horizontal_cache_key": "47fd4c8a59dddd25a4ecb734c5347f2ccfb5b0fe91f1d5b33960c27197e1f984",
+        "horizontal_fps": 24
       },
       "transition_out": "cut",
       "stage_status": {
         "narration": "generated",
-        "keyframe": "completed",
-        "video": "cached",
+        "keyframe": "failed",
+        "video": "generated",
         "keyframe_vertical": "completed",
         "video_vertical": "generated"
       }
@@ -328,13 +336,15 @@
         "cache_key": "b4bb9ac482bda0ed21b5211cca5916e2a12117cd33b82ea7eb1cd520ca54d37f",
         "vertical_clip_path": "assets/videos_vertical/shot_05.mp4",
         "vertical_cache_key": "4206f08094dab81ca2751d28ca986bb30c885325dca954734ade035fd73c99bf",
-        "vertical_fps": 24
+        "vertical_fps": 24,
+        "horizontal_cache_key": "eb0a62a9b210de0fcbe2145b5e8c70f0efdfb040ca85bdf6d30c3837b2dbd0b0",
+        "horizontal_fps": 24
       },
       "transition_out": "crossfade",
       "stage_status": {
         "narration": "generated",
-        "keyframe": "completed",
-        "video": "cached",
+        "keyframe": "failed",
+        "video": "generated",
         "keyframe_vertical": "completed",
         "video_vertical": "generated"
       }
@@ -382,13 +392,15 @@
         "cache_key": "3a9887d769488313303a8d4ab9d6cdaea828646d3b6b4af5b2ea093f75036627",
         "vertical_clip_path": "assets/videos_vertical/shot_06.mp4",
         "vertical_cache_key": "dbd3a784009783261aa9e4a520055dbe7a3b254fff93106220d222d79a628d77",
-        "vertical_fps": 24
+        "vertical_fps": 24,
+        "horizontal_cache_key": "f43e150a6e18ac9e685f6057ce1c59a60a6f434214ac3151e624cb36f5d3a763",
+        "horizontal_fps": 24
       },
       "transition_out": "crossfade",
       "stage_status": {
         "narration": "generated",
-        "keyframe": "completed",
-        "video": "cached",
+        "keyframe": "failed",
+        "video": "generated",
         "keyframe_vertical": "completed",
         "video_vertical": "generated"
       }
@@ -436,13 +448,15 @@
         "cache_key": "0e7e68a80a5c17e817548d571dce66d24f9b1e31e7ece266af60abede1ffd5ca",
         "vertical_clip_path": "assets/videos_vertical/shot_07.mp4",
         "vertical_cache_key": "71ce6465458be94151f65ef800279f6e38b6d4a0e9270c34ac52f807aef5aac8",
-        "vertical_fps": 24
+        "vertical_fps": 24,
+        "horizontal_cache_key": "fefff872ce11d69e0480e36e5f849a8edb785296d71d24a5386d03d5a7fdc6d0",
+        "horizontal_fps": 24
       },
       "transition_out": "crossfade",
       "stage_status": {
         "narration": "generated",
-        "keyframe": "completed",
-        "video": "cached",
+        "keyframe": "failed",
+        "video": "generated",
         "keyframe_vertical": "completed",
         "video_vertical": "generated"
       }
@@ -489,13 +503,15 @@
         "cache_key": "70fe918c8209ff6aaa7d922373abfcc92cddb0761d8875424595cc2f2e2b9086",
         "vertical_clip_path": "assets/videos_vertical/shot_08.mp4",
         "vertical_cache_key": "8db3ec503bea38c460b7a94e662c629155a7319ba64b79f81cc4ede266915840",
-        "vertical_fps": 24
+        "vertical_fps": 24,
+        "horizontal_cache_key": "d1c0e3b34b7cf4c6a8f3a77f4858a4d832b3657d51829d3c806f40504f7442fe",
+        "horizontal_fps": 24
       },
       "transition_out": "fade_black",
       "stage_status": {
         "narration": "generated",
-        "keyframe": "completed",
-        "video": "cached",
+        "keyframe": "failed",
+        "video": "generated",
         "keyframe_vertical": "completed",
         "video_vertical": "generated"
       }

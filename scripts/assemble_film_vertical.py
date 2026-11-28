@@ -187,21 +187,23 @@ def main() -> int:
 
     filters = []
 
-    # Smaller, wrapped subtitles for portrait/mobile viewing.
+    # Portrait subtitles: cinematic, readable, bottom-centered.
     subtitle_path = "assets/output/narration/subtitles_vertical.srt"
 
     subtitle_filter = (
         f"subtitles=filename='{subtitle_path}':"
         "force_style='FontName=Arial,"
-        "FontSize=26,"
-        "Bold=0,"
-        "Outline=2,"
-        "Shadow=0,"
+        "FontSize=10,"
+        "Bold=1,"
+        "PrimaryColour=&H00FFFFFF,"
+        "OutlineColour=&H00000000,"
+        "Outline=1.5,"
+        "Shadow=1,"
         "Alignment=2,"
-        "MarginL=110,"
-        "MarginR=110,"
-        "MarginV=110,"
-        "WrapStyle=2'"
+        "MarginL=15,"
+        "MarginR=15,"
+        "MarginV=35,"
+        "WrapStyle=0'"
     )
 
     filters.append(
@@ -314,7 +316,8 @@ def main() -> int:
     ]
 
     if not video_streams:
-        raise RuntimeError("Final output does not contain an H.264 video stream.")
+        raise RuntimeError(
+            "Final output does not contain an H.264 video stream.")
 
     video_stream = video_streams[0]
     actual_duration = float(result["format"]["duration"])
